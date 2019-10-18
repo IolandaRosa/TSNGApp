@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.LoginActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <Button
+            android:id="@+id/loginBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loginPasswordEditText"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="32dp"
+            android:background="@drawable/button_shadow"
+            android:text="@string/menu_Login"
+            android:onClick="login"
+            android:textColor="@android:color/white" />
+
+        <EditText
+            android:id="@+id/loginPasswordEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/loginUsernameEditText"
+            android:layout_alignParentEnd="true"
+            android:ems="10"
+            android:inputType="textPassword" />
+
+
+        <EditText
+            android:id="@+id/loginUsernameEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/loginUserTextView"
+            android:layout_alignStart="@+id/loginPasswordEditText"
+            android:layout_alignBottom="@+id/loginUserTextView"
+            android:ems="10"
+            android:inputType="textPersonName"
+            tools:text="eu@mail.pt" />
+
+        <TextView
+            android:id="@+id/loginPasswordTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/loginPasswordEditText"
+            android:layout_alignParentStart="true"
+            android:text="@string/password"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/loginUserTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textViewtitleSignIn"
+            android:layout_alignStart="@+id/loginPasswordTextView"
+            android:layout_marginTop="43dp"
+            android:text="@string/UsernameEmail"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:typeface="normal" />
+
+        <TextView
+            android:id="@+id/textViewtitleSignIn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="89dp"
+            android:gravity="center"
+            android:text="@string/menu_Login"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+    </RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
