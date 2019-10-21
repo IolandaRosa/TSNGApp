@@ -15,17 +15,23 @@ import java.net.URL;
 
 public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
 
-    private JSONObject dataToPost;
     private final String LOG_TAG="AsyncTaskLoginPost";
 
-    public AsyncTaskLoginPost(JSONObject dataToPost){
-        this.dataToPost = dataToPost;
+    private JSONObject dataToPost;
+    private AsyncResponse listener;
+
+    public AsyncTaskLoginPost(JSONObject dataToPost, AsyncResponse listener){
+        if(dataToPost != null){
+            this.dataToPost = dataToPost;
+        }
+
+        this.listener = listener;
     }
 
     @Override
     protected String doInBackground(String... urlStrings) {
 
-        String result = null;
+        String result = "";
         HttpURLConnection conn = null;
         InputStream stream = null;
         BufferedReader reader = null;
@@ -60,7 +66,7 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
                 if(stream != null){
                     reader = new BufferedReader(new InputStreamReader(stream));
 
-                    this.convertToString(result, reader);
+                    result = this.convertToString(result, reader);
                 }
             }
             else{
@@ -72,9 +78,6 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
             Log.d(LOG_TAG,"The doInBckground for login failed with "+ex.getMessage());
         }
         finally {
-
-
-
             try {
                 if(reader!=null){
                     reader.close();
@@ -95,14 +98,14 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
         return result;
     }
 
-    private void convertToString(String result, BufferedReader reader) {
+    private String convertToString(String result, BufferedReader reader) {
         String tempString = "";
 
         try{
             while (true){
                 tempString = reader.readLine();
                 if(tempString == null){
-                    break;
+                    return result;
                 }
                 result +=tempString;
             }
@@ -111,7 +114,16 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
             Log.d(LOG_TAG,"Error in convertToString " + ex.getMessage());
         }
 
+        return "";
     }
 
+    @Override
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
+
+        if(result != null){
+            listener.onTaskDone(result);
+        }
+    }
 
 }
