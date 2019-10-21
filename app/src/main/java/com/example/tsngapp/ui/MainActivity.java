@@ -1,88 +1,82 @@
 package com.example.tsngapp.ui;
 
+import android.os.Bundle;
+
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-
 import com.example.tsngapp.R;
+import com.example.tsngapp.helpers.ErrorValidator;
+
+import javax.xml.validation.Validator;
+
 
 public class MainActivity extends AppCompatActivity {
 
-    private final int LOGIN_ACTIVITY_REQUEST_CODE=1;
-
-    private Menu menu;
+    private EditText usernameEditText;
+    private EditText passwordEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if(!ErrorValidator.getInstance().checkInternetConnection(this)){
+            ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
+            return;
+        }
+
+        this.usernameEditText = findViewById(R.id.loginUsernameEditText);
+        this.passwordEditText = findViewById(R.id.loginPasswordEditText);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
-        if(menu!=null){
-            getMenuInflater().inflate(R.menu.main_menu, menu);
-            this.menu = menu;
-        }
-
+        menu.getItem(0).setVisible(false);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()){
-            case R.id.action_home:
-                break;
-            case R.id.action_login:
-                startLoginActivity();
-                break;
-            case R.id.action_logout:
-                break;
-            case R.id.action_profile:
-                break;
-                default: break;
+
+        if (item.getItemId() == R.id.action_signIn) {
+            setupSigupActivity();
         }
 
         return true;
+
     }
 
-    private void startLoginActivity(){
-        startActivityForResult(
-                new Intent(this,LoginActivity.class),
-                LOGIN_ACTIVITY_REQUEST_CODE);
+    private void setupSigupActivity() {
+        Toast.makeText(this,"signup",Toast.LENGTH_LONG).show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == LOGIN_ACTIVITY_REQUEST_CODE &&
-        resultCode == Activity.RESULT_OK){
-            //recebe user
-            //atualiza menu
-            updateMenuIcons();
+    public void login(View view) {
+        //Antes de fazer qualuqer coisa ve ligação à internet
+        if(!ErrorValidator.getInstance().checkInternetConnection(this)){
+            ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
+            return;
         }
+
+        String username = usernameEditText.getText().toString().trim();
+        String password = passwordEditText.getText().toString().trim();
+
+        if(username.isEmpty() || password.isEmpty()){
+            ErrorValidator.getInstance().showErrorMessage(this,"There must be no empty fields on form");
+            return;
+        }
+
+        //se nenhum campo esta vazio faz o login
+
     }
-
-    private void updateMenuIcons(){
-
-        //Login -> true: User==null e false User!=null
-        menu.getItem(1).setVisible(false);
-        //Perfil -> true: User!=null e false User==null
-        menu.getItem(2).setVisible(true);
-        //Logout -> true: User!=null e false User!=null
-        menu.getItem(3).setVisible(true);
-
-    }
-
-
 }

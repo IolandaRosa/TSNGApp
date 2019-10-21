@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
+    <!--<item
         android:id="@+id/action_home"
         android:icon="@drawable/ic_home_white_24dp"
         android:title="@string/menu_Home"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
     <item
         android:id="@+id/action_login"
         android:icon="@drawable/ic_login_white_24dp"
         android:title="@string/menu_Login"
         app:showAsAction="ifRoom" />
+
     <item
+        android:id="@+id/action_signIn"
+        android:icon="@drawable/ic_person_add_white_24dp"
+        android:title="@string/menu_SignUp"
+        app:showAsAction="ifRoom" />
+    <!--<item
         android:id="@+id/action_profile"
         android:icon="@drawable/ic_profile_white_24dp"
         android:title="@string/menu_MyProfile"
@@ -22,5 +28,5 @@
         android:icon="@drawable/ic_logout_white_24dp"
         android:title="@string/menu_Logout"
         android:visible="false"
-        app:showAsAction="ifRoom" />
+        app:showAsAction="ifRoom" />-->
 </menu>

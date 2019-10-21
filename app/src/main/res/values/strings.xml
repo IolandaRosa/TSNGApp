@@ -6,4 +6,6 @@
     <string name="menu_MyProfile">Perfil</string>
     <string name="password">Password:</string>
     <string name="UsernameEmail">Username / Email:</string>
+    <string name="menu_SignUp">Sign Up</string>
+    <string name="title">Atention</string>
 </resources>
