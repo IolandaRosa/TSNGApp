@@ -9,4 +9,5 @@ public class Constants {
     //API
     private static final String BASE_URL="http://smartaal.dei.estg.ipleiria.pt/api/";
     public static final String LOGIN_URL= BASE_URL+"login";
+    public static  final String USERS_ME_URL = BASE_URL+"users/me";
 }

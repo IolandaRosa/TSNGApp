@@ -2,6 +2,7 @@ package com.example.tsngapp.view_managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.example.tsngapp.helpers.Constants;
 
@@ -9,6 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginManager {
+    private final String LOG_TAG="LoginManager";
+
     private static final LoginManager ourInstance = new LoginManager();
 
     public static LoginManager getInstance() {
@@ -75,4 +78,20 @@ public class LoginManager {
         return sharedPreferences.getString(Constants.TOKEN_KEY,"");
     }
 
+    public String getTokenFromJson(String jsonString) {
+        String token = "";
+
+        try{
+            JSONObject jsonResponse = new JSONObject(jsonString);
+
+            token = jsonResponse.getString("access_token");
+
+        }
+        catch(Exception ex){
+            Log.d(LOG_TAG,"Error during json parsing "+ex.getMessage());
+        }
+
+        return token;
+
+    }
 }

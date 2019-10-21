@@ -3,53 +3,44 @@ package com.example.tsngapp.network;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
+public class AsyncGetAuthTask extends AsyncTask<String, Integer, String> {
 
-    private final String LOG_TAG="AsyncTaskLoginPost";
-
-    private JSONObject dataToPost;
+    private final String LOG_TAG = "AsyncGetAuthTask";
+    private String token;
     private AsyncResponse listener;
 
-    public AsyncTaskLoginPost(JSONObject dataToPost, AsyncResponse listener){
-        if(dataToPost != null){
-            this.dataToPost = dataToPost;
+    public AsyncGetAuthTask(String token, AsyncResponse listener){
+        if(token != null && !token.isEmpty()){
+            this.token = token;
         }
 
-        this.listener = listener;
+        if(listener!=null){
+            this.listener = listener;
+        }
     }
 
     @Override
     protected String doInBackground(String... urlStrings) {
-
         String result = "";
         HttpURLConnection conn = null;
         InputStream stream = null;
         BufferedReader reader = null;
 
         try{
-
             //Configura a conexão
             URL url = new URL(urlStrings[0]);
             conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
+            conn.setRequestMethod("GET");
+            conn.setRequestProperty("Authorization", "Bearer "+token);
 
-            //Enviar corpo do post em JSON
-            OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-            writer.write(dataToPost.toString());
-            writer.flush();
+
 
             //Inicia a conexão
             conn.connect();
@@ -78,18 +69,17 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
             Log.d(LOG_TAG,"The doInBckground for login failed with "+ex.getMessage());
         }
         finally {
+
+
             try {
-                if(reader!=null){
+                if(reader!=null)
                     reader.close();
-                }
 
-                if(stream!=null){
+                if(stream!=null)
                     stream.close();
-                }
 
-                if(conn!=null){
+                if(conn!=null)
                     conn.disconnect();
-                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -122,9 +112,8 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if(result != null){
+        if(result!=null){
             listener.onTaskDone(result);
         }
     }
-
 }

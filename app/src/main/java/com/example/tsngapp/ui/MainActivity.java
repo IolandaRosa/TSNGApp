@@ -13,6 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.ErrorValidator;
+import com.example.tsngapp.helpers.JsonConverterSingleton;
+import com.example.tsngapp.model.User;
+import com.example.tsngapp.network.AsyncGetAuthTask;
 import com.example.tsngapp.network.AsyncResponse;
 import com.example.tsngapp.network.AsyncTaskLoginPost;
 import com.example.tsngapp.view_managers.LoginManager;
@@ -24,7 +27,9 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private AsyncTaskLoginPost task;
+    private AsyncTaskLoginPost loginTask;
+    private AsyncGetAuthTask getUserTask;
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //se nenhum campo esta vazio faz o login
-        this.task=new AsyncTaskLoginPost(jsonObject, new AsyncResponse() {
+        this.loginTask =new AsyncTaskLoginPost(jsonObject, new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
                 if(jsonString==null || jsonString.isEmpty()){
@@ -92,16 +97,33 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                //Em caso de sucesso
-                Toast.makeText(MainActivity.this,"login",Toast.LENGTH_LONG).show();
+                String token = LoginManager.getInstance().getTokenFromJson(jsonString);
 
                 //Grava token nas shared preferences
-                LoginManager.getInstance().saveAuthToken();
-                //Vai buscar perfil
+                LoginManager.getInstance().saveAuthToken(token, MainActivity.this);
+
+                //Vai buscar a informação do utilizador
+                getUserInfo(token);
+
                 //Redireciona para ecra de perfil
             }
         });
 
-        this.task.execute(Constants.LOGIN_URL);
+        this.loginTask.execute(Constants.LOGIN_URL);
+    }
+
+    private void getUserInfo(final String token){
+        this.getUserTask = new AsyncGetAuthTask(token, new AsyncResponse() {
+            @Override
+            public void onTaskDone(String jsonString) {
+
+                user = JsonConverterSingleton.getInstance().jsonToUser(jsonString);
+
+                user.setAcessToken(token);
+
+            }
+        });
+
+        this.getUserTask.execute(Constants.USERS_ME_URL);
     }
 }
