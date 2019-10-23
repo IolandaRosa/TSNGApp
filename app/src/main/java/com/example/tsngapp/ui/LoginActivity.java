@@ -1,11 +1,11 @@
 package com.example.tsngapp.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,7 +23,7 @@ import com.example.tsngapp.view_managers.LoginManager;
 import org.json.JSONObject;
 
 
-public class MainActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
     private EditText passwordEditText;
@@ -34,21 +34,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
         if (!ErrorValidator.getInstance().checkInternetConnection(this)) {
             ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
             return;
         }
 
-        this.usernameEditText = findViewById(R.id.loginUsernameEditText);
-        this.passwordEditText = findViewById(R.id.loginPasswordEditText);
+        //todo ir buscar token as shared preference
+        //todo ir buscar user com token
+        //todo se user não for null redireciona para pagina inicial
+
+        this.usernameEditText = findViewById(R.id.registerNameEditText);
+        this.passwordEditText = findViewById(R.id.registerUsernameEditText);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.initial_menu, menu);
 
         menu.getItem(0).setVisible(false);
         return true;
@@ -59,15 +63,15 @@ public class MainActivity extends AppCompatActivity {
         super.onOptionsItemSelected(item);
 
         if (item.getItemId() == R.id.action_signIn) {
-            setupSigupActivity();
+            setupRegisterActivity();
         }
 
         return true;
-
     }
 
-    private void setupSigupActivity() {
-        Toast.makeText(this, "signup", Toast.LENGTH_LONG).show();
+    private void setupRegisterActivity() {
+        startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
+        this.finish();
     }
 
     public void login(View view) {
@@ -77,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        //Obtém password e username, valida e cria json para enviar no pedido
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
@@ -87,20 +92,18 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-
-        //se nenhum campo esta vazio faz o login
         this.loginTask =new AsyncTaskLoginPost(jsonObject, new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
                 if(jsonString==null || jsonString.isEmpty()){
-                    ErrorValidator.getInstance().showErrorMessage(MainActivity.this, "An error ocurred during the login");
+                    ErrorValidator.getInstance().showErrorMessage(LoginActivity.this, "An error ocurred during the login");
                     return;
                 }
 
                 String token = LoginManager.getInstance().getTokenFromJson(jsonString);
 
                 //Grava token nas shared preferences
-                LoginManager.getInstance().saveAuthToken(token, MainActivity.this);
+                LoginManager.getInstance().saveAuthToken(token, LoginActivity.this);
 
                 //Vai buscar a informação do utilizador
                 getUserInfo(token);
@@ -117,9 +120,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTaskDone(String jsonString) {
 
+                //Converte json em User
                 user = JsonConverterSingleton.getInstance().jsonToUser(jsonString);
 
                 user.setAcessToken(token);
+
+                //vai para pagina inicial da aplicação
+                //todo - atualizar
 
             }
         });

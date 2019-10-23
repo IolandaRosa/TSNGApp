@@ -21,6 +21,8 @@ public class User {
         switch (type){
             case "admin": this.type=UserType.ADMIN;
             break;
+            case "normal":this.type=UserType.NORMAL;
+            default: this.type=UserType.UNDEFINED;
         }
         this.elder_id = elder_id;
     }
