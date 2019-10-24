@@ -13,14 +13,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
+public class AsyncTaskAuthenticationPost extends AsyncTask<String, Integer, String> {
 
-    private final String LOG_TAG="AsyncTaskLoginPost";
+    private final String LOG_TAG="AsyncTaskAuthPost";
 
     private JSONObject dataToPost;
     private AsyncResponse listener;
 
-    public AsyncTaskLoginPost(JSONObject dataToPost, AsyncResponse listener){
+    public AsyncTaskAuthenticationPost(JSONObject dataToPost, AsyncResponse listener){
         if(dataToPost != null){
             this.dataToPost = dataToPost;
         }
@@ -56,6 +56,8 @@ public class AsyncTaskLoginPost extends AsyncTask<String, Integer, String> {
 
             //Ve a resposta
             int responseCode = conn.getResponseCode();
+
+            String message = conn.getResponseMessage();
 
             if(responseCode >199 && responseCode<300){
 

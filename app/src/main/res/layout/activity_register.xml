@@ -153,12 +153,14 @@
             <RadioButton android:id="@+id/registerRadioBtnAdmin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/admin" />
+                android:text="@string/admin"
+                android:onClick="onRadioButtonClicked"/>
 
             <RadioButton android:id="@+id/registerRadioBtnUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/normal" />
+                android:text="@string/normal"
+                android:onClick="onRadioButtonClicked"/>
         </RadioGroup>
 
         <Button

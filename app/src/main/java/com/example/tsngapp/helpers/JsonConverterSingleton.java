@@ -17,14 +17,25 @@ public class JsonConverterSingleton {
     private JsonConverterSingleton() {
     }
 
-    public User jsonToUser(String jsonUser){
+    public User jsonToUser(String jsonUser, Boolean isRegister){
         User user=null;
 
         try{
 
-            JSONObject jsonObject = new JSONObject(jsonUser);
+            JSONObject userObject = new JSONObject(jsonUser);
 
-            JSONObject userObject = jsonObject.getJSONObject("data");
+            if(!isRegister){
+                userObject = userObject.getJSONObject("data");
+            }
+
+            int elder_id=-1;
+
+            try{
+                elder_id = userObject.getInt("elder_id");
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
 
             user = new User(
                     userObject.getInt("id"),
@@ -32,7 +43,7 @@ public class JsonConverterSingleton {
                     userObject.getString("username"),
                     userObject.getString("email"),
                     userObject.getString("type"),
-                    userObject.getInt("elder_id")
+                    elder_id //se for -1 é uma situação de registo
             );
         }
         catch (Exception ex){

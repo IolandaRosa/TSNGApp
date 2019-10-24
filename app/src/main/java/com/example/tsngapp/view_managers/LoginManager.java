@@ -5,6 +5,9 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.ErrorCode;
+import com.example.tsngapp.helpers.ErrorValidator;
+import com.example.tsngapp.model.DataToSend;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,31 +31,37 @@ public class LoginManager {
      * @param password
      * @return JSONObject
      */
-    public JSONObject generateJsonForPost(String username, String password) {
+    public DataToSend generateJsonForPost(String username, String password) {
 
-        JSONObject jsonObj = null;
+        DataToSend dataToSend = new DataToSend();
 
-        if (username == null || username.isEmpty() ||
-                password == null || password.isEmpty()) {
-            return null;
+        if(ErrorValidator.getInstance().isEmpty(username)){
+            dataToSend.addErrorCode(ErrorCode.EMAIL_EMPTY);
+        }
+
+        if (ErrorValidator.getInstance().isEmpty(password)) {
+            dataToSend.addErrorCode(ErrorCode.PASSWORD_EMPTY);
+        }
+
+        if(dataToSend.getErrorCodes().size() > 0){
+            return dataToSend;
         }
 
         try {
-            jsonObj = new JSONObject();
 
             if (android.util.Patterns.EMAIL_ADDRESS.matcher(username).matches()) {
-                jsonObj.put("email", username);
+                dataToSend.getJsonObject().put("email", username);
             }
             else{
-                jsonObj.put("username",username);
+                dataToSend.getJsonObject().put("username",username);
             }
 
-            jsonObj.put("password",password);
+            dataToSend.getJsonObject().put("password",password);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        return jsonObj;
+        return dataToSend;
     }
 
     /**

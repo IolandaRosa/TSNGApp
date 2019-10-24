@@ -1,33 +1,36 @@
 package com.example.tsngapp.ui;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.ErrorCode;
 import com.example.tsngapp.helpers.ErrorValidator;
 import com.example.tsngapp.helpers.JsonConverterSingleton;
+import com.example.tsngapp.model.DataToSend;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncGetAuthTask;
 import com.example.tsngapp.network.AsyncResponse;
-import com.example.tsngapp.network.AsyncTaskLoginPost;
+import com.example.tsngapp.network.AsyncTaskAuthenticationPost;
 import com.example.tsngapp.view_managers.LoginManager;
-
-import org.json.JSONObject;
 
 
 public class LoginActivity extends AppCompatActivity {
 
     private EditText usernameEditText;
     private EditText passwordEditText;
-    private AsyncTaskLoginPost loginTask;
+    private AsyncTaskAuthenticationPost loginTask;
     private AsyncGetAuthTask getUserTask;
     private User user;
 
@@ -70,8 +73,24 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupRegisterActivity() {
-        startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
-        this.finish();
+        Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+
+        startActivityForResult(intent, Constants.REGISTER_ACTIVITY_CODE);
+        //startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
+        //this.finish();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == Constants.REGISTER_ACTIVITY_CODE && resultCode == Activity.RESULT_OK){
+            if(data!=null){
+                user = (User)data.getSerializableExtra(Constants.INTENT_USER_KEY);
+                String password = data.getStringExtra(Constants.INTENT_PASSWORD_KEY);
+                makeLogin(user.getEmail(),password);
+            }
+        }
     }
 
     public void login(View view) {
@@ -85,14 +104,28 @@ public class LoginActivity extends AppCompatActivity {
         String username = usernameEditText.getText().toString().trim();
         String password = passwordEditText.getText().toString().trim();
 
-        final JSONObject jsonObject = LoginManager.getInstance().generateJsonForPost(username, password);
+        makeLogin(username, password);
 
-        if(jsonObject==null){
-            ErrorValidator.getInstance().showErrorMessage(this, "Some error happen. There must be no empty fields on form");
+    }
+
+    private void makeLogin(String username, String password){
+
+        final DataToSend dataToSend = LoginManager.getInstance().generateJsonForPost(username, password);
+
+        if(dataToSend.getErrorCodes().size()>0){
+            for (ErrorCode e: dataToSend.getErrorCodes()){
+                if(e == ErrorCode.EMAIL_EMPTY){
+                    usernameEditText.setError(ErrorValidator.getInstance().getErrorMessage(e));
+                }
+                if(e == ErrorCode.PASSWORD_EMPTY){
+                    passwordEditText.setError(ErrorValidator.getInstance().getErrorMessage(e));
+                }
+            }
+
             return;
         }
 
-        this.loginTask =new AsyncTaskLoginPost(jsonObject, new AsyncResponse() {
+        this.loginTask =new AsyncTaskAuthenticationPost(dataToSend.getJsonObject(), new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
                 if(jsonString==null || jsonString.isEmpty()){
@@ -113,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         this.loginTask.execute(Constants.LOGIN_URL);
+
     }
 
     private void getUserInfo(final String token){
@@ -121,13 +155,16 @@ public class LoginActivity extends AppCompatActivity {
             public void onTaskDone(String jsonString) {
 
                 //Converte json em User
-                user = JsonConverterSingleton.getInstance().jsonToUser(jsonString);
+                user = JsonConverterSingleton.getInstance().jsonToUser(jsonString, false);
 
-                user.setAcessToken(token);
+                if(user!=null){
+                    user.setAcessToken(token);
 
-                //vai para pagina inicial da aplicação
-                //todo - atualizar
+                    Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_SHORT).show();
 
+                    //vai para pagina inicial da aplicação
+                    //todo - atualizar
+                }
             }
         });
 
