@@ -3,10 +3,14 @@ package com.example.tsngapp.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -28,33 +32,42 @@ import com.example.tsngapp.view_managers.LoginManager;
 
 public class LoginActivity extends AppCompatActivity {
 
+    private final String LOG_TAG = "LoginActivity";
+
     private EditText usernameEditText;
     private EditText passwordEditText;
     private AsyncTaskAuthenticationPost loginTask;
     private AsyncGetAuthTask getUserTask;
     private User user;
+    private LinearLayout progress_Layout;
+    private TextView progressaLayoutTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //Ver ligação à Internet
         if (!ErrorValidator.getInstance().checkInternetConnection(this)) {
             ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
             return;
         }
 
-        String token = LoginManager.getInstance().retrieveAuthToken(this);
-        getUserInfo(token);
-        if(user!=null){
-            //redireciona para ecra de login
-
-            finish();
-        }
-        //todo se user não for null redieciona para pagina inicial
 
         this.usernameEditText = findViewById(R.id.registerNameEditText);
         this.passwordEditText = findViewById(R.id.registerUsernameEditText);
+        this.progress_Layout = findViewById(R.id.progress_layout);
+        this.progressaLayoutTextView = findViewById(R.id.progressLayoutTextView);
+
+        //Ve se token ainda esta valido para autenticação
+        String token = LoginManager.getInstance().retrieveAuthToken(this);
+        getUserInfo(token);
+        if (user != null) {
+            //redireciona para ecra de incio para utilizador autenticado e termina a actividade de login para
+            //utilizador já não poder voltar mais a esta atividade
+            finish();
+        }
+
     }
 
     @Override
@@ -78,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void setupRegisterActivity() {
-        Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
+        Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
 
         startActivityForResult(intent, Constants.REGISTER_ACTIVITY_CODE);
         //startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
@@ -89,20 +102,23 @@ public class LoginActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == Constants.REGISTER_ACTIVITY_CODE && resultCode == Activity.RESULT_OK){
-            if(data!=null){
-                user = (User)data.getSerializableExtra(Constants.INTENT_USER_KEY);
+        if (requestCode == Constants.REGISTER_ACTIVITY_CODE && resultCode == Activity.RESULT_OK) {
+            if (data != null) {
+                user = (User) data.getSerializableExtra(Constants.INTENT_USER_KEY);
                 String password = data.getStringExtra(Constants.INTENT_PASSWORD_KEY);
-                makeLogin(user.getEmail(),password);
+                makeLogin(user.getEmail(), password);
             }
         }
     }
 
     public void login(View view) {
-        //Antes de fazer qualuqer coisa ve ligação à internet
-        if (!ErrorValidator.getInstance().checkInternetConnection(this)) {
-            ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
-            return;
+
+        //Esconde o teclado
+        try {
+            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            Log.d(LOG_TAG, "Failed keyboard hidding" + e.getMessage());
         }
 
         //Obtém password e username, valida e cria json para enviar no pedido
@@ -113,16 +129,16 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void makeLogin(String username, String password){
+    private void makeLogin(String username, String password) {
 
         final DataToSend dataToSend = LoginManager.getInstance().generateJsonForPost(username, password);
 
-        if(dataToSend.getErrorCodes().size()>0){
-            for (ErrorCode e: dataToSend.getErrorCodes()){
-                if(e == ErrorCode.EMAIL_EMPTY){
+        if (dataToSend.getErrorCodes().size() > 0) {
+            for (ErrorCode e : dataToSend.getErrorCodes()) {
+                if (e == ErrorCode.EMAIL_EMPTY) {
                     usernameEditText.setError(ErrorValidator.getInstance().getErrorMessage(e));
                 }
-                if(e == ErrorCode.PASSWORD_EMPTY){
+                if (e == ErrorCode.PASSWORD_EMPTY) {
                     passwordEditText.setError(ErrorValidator.getInstance().getErrorMessage(e));
                 }
             }
@@ -130,10 +146,12 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        this.loginTask =new AsyncTaskAuthenticationPost(dataToSend.getJsonObject(), new AsyncResponse() {
+        this.loginTask = new AsyncTaskAuthenticationPost(dataToSend.getJsonObject(), new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
-                if(jsonString==null || jsonString.isEmpty()){
+                progress_Layout.setVisibility(View.INVISIBLE);
+
+                if (jsonString == null || jsonString.isEmpty()) {
                     ErrorValidator.getInstance().showErrorMessage(LoginActivity.this, "An error ocurred during the login");
                     return;
                 }
@@ -150,24 +168,27 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        this.progressaLayoutTextView.setText("Login user");
+        this.progress_Layout.setVisibility(View.VISIBLE);
         this.loginTask.execute(Constants.LOGIN_URL);
 
     }
 
-    private void getUserInfo(final String token){
+    private void getUserInfo(final String token) {
         this.getUserTask = new AsyncGetAuthTask(token, new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
+                progress_Layout.setVisibility(View.GONE);
 
                 //Converte json em User
                 user = JsonConverterSingleton.getInstance().jsonToUser(jsonString, false);
 
-                if(user!=null){
+                if (user != null) {
                     user.setAcessToken(token);
 
                     Bundle bundle = new Bundle();
 
-                    bundle.putSerializable(Constants.INTENT_USER_KEY,user);
+                    bundle.putSerializable(Constants.INTENT_USER_KEY, user);
 
                     Intent i = new Intent(LoginActivity.this, HomeActivity.class);
 
@@ -180,6 +201,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        this.progress_Layout.setVisibility(View.VISIBLE);
         this.getUserTask.execute(Constants.USERS_ME_URL);
     }
 }

@@ -10,14 +10,17 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.auth.HomeActivity"></activity>
-        <activity android:name=".ui.RegisterActivity" />
+        <activity android:name=".ui.auth.HomeActivity"
+            android:configChanges="orientation|screenSize"></activity>
+        <activity android:name=".ui.RegisterActivity"
+            android:screenOrientation="locked"
+            android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ui.LoginActivity"
+            android:screenOrientation="locked"
             android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

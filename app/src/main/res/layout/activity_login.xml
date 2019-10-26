@@ -7,6 +7,7 @@
     tools:context=".ui.LoginActivity">
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
@@ -14,31 +15,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textViewtTitleRegister"
+        <Button
+            android:id="@+id/loginBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/registerUsernameEditText"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="89dp"
-            android:gravity="center"
+            android:layout_marginTop="32dp"
+            android:background="@color/colorPrimaryLight"
+            android:onClick="login"
             android:text="@string/menu_Login"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="28sp"
-            android:textStyle="bold" />
+            android:textColor="@android:color/white" />
 
-        <TextView
-            android:id="@+id/registerNameTextView"
+        <EditText
+            android:id="@+id/registerUsernameEditText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textViewtTitleRegister"
-            android:layout_alignStart="@+id/registerUsernameTextView"
-            android:layout_marginTop="43dp"
-            android:text="@string/email"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:typeface="normal" />
+            android:layout_below="@+id/registerNameEditText"
+            android:layout_alignParentEnd="true"
+            android:ems="10"
+            android:inputType="textPassword" />
 
 
         <EditText
@@ -62,27 +58,61 @@
             android:textColor="@color/colorPrimary"
             android:textSize="18sp" />
 
-        <EditText
-            android:id="@+id/registerUsernameEditText"
+        <TextView
+            android:id="@+id/registerNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registerNameEditText"
-            android:layout_alignParentEnd="true"
-            android:ems="10"
-            android:inputType="textPassword" />
+            android:layout_below="@+id/textViewtTitleRegister"
+            android:layout_alignStart="@+id/registerUsernameTextView"
+            android:layout_marginTop="43dp"
+            android:text="@string/email"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:typeface="normal" />
 
-        <Button
-            android:id="@+id/loginBtn"
+        <TextView
+            android:id="@+id/textViewtTitleRegister"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/registerUsernameEditText"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_marginTop="32dp"
-            android:background="@color/colorPrimaryLight"
+            android:layout_marginTop="89dp"
+            android:gravity="center"
             android:text="@string/menu_Login"
-            android:textColor="@android:color/white"
-            android:onClick="login"/>
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
     </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/progress_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/progressLayoutTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            tools:text="Loading resource..." />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
