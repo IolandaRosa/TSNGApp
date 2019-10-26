@@ -7,7 +7,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +22,7 @@ import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncGetAuthTask;
 import com.example.tsngapp.network.AsyncResponse;
 import com.example.tsngapp.network.AsyncTaskAuthenticationPost;
+import com.example.tsngapp.ui.auth.HomeActivity;
 import com.example.tsngapp.view_managers.LoginManager;
 
 
@@ -44,9 +44,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        //todo ir buscar token as shared preference
-        //todo ir buscar user com token
-        //todo se user não for null redireciona para pagina inicial
+        String token = LoginManager.getInstance().retrieveAuthToken(this);
+        getUserInfo(token);
+        if(user!=null){
+            //redireciona para ecra de login
+
+            finish();
+        }
+        //todo se user não for null redieciona para pagina inicial
 
         this.usernameEditText = findViewById(R.id.registerNameEditText);
         this.passwordEditText = findViewById(R.id.registerUsernameEditText);
@@ -160,10 +165,17 @@ public class LoginActivity extends AppCompatActivity {
                 if(user!=null){
                     user.setAcessToken(token);
 
-                    Toast.makeText(LoginActivity.this, "Success", Toast.LENGTH_SHORT).show();
+                    Bundle bundle = new Bundle();
+
+                    bundle.putSerializable(Constants.INTENT_USER_KEY,user);
+
+                    Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+
+                    i.putExtras(bundle);
 
                     //vai para pagina inicial da aplicação
-                    //todo - atualizar
+                    startActivity(i);
+                    LoginActivity.this.finish();
                 }
             }
         });

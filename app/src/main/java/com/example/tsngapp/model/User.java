@@ -10,6 +10,7 @@ public class User implements Serializable {
     private UserType type;
     private int elder_id;
     private String acessToken;
+    private String photoUrl;
 
 
     public User(){
@@ -27,6 +28,7 @@ public class User implements Serializable {
             default: this.type=UserType.UNDEFINED;
         }
         this.elder_id = elder_id;
+        this.photoUrl="";
     }
 
     public String getAcessToken() {
@@ -83,5 +85,13 @@ public class User implements Serializable {
 
     public void setElder_id(int elder_id) {
         this.elder_id = elder_id;
+    }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

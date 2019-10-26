@@ -101,6 +101,12 @@ public class LoginManager {
         }
 
         return token;
+    }
 
+    public void removeFromSharedPreference(Context context){
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.remove(Constants.TOKEN_KEY);
+        editor.apply();
     }
 }
