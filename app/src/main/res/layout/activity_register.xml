@@ -1,195 +1,298 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.RegisterActivity"
-    >
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <TextView
-            android:id="@+id/textViewtTitleRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="89dp"
-            android:gravity="center"
-            android:text="@string/menu_SignUp"
-            android:textColor="@color/colorPrimaryDark"
-            android:textSize="28sp"
-            android:textStyle="bold" />
-
-        <TextView
-            android:id="@+id/registerNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textViewtTitleRegister"
-            android:layout_alignStart="@+id/registerUsernameTextView"
-            android:layout_marginTop="43dp"
-            android:text="@string/name"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:typeface="normal" />
+    tools:context=".ui.RegisterActivity">
 
 
-        <EditText
-            android:id="@+id/registerNameEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBaseline="@+id/registerNameTextView"
-            android:layout_alignStart="@+id/registerUsernameEditText"
-            android:layout_alignBottom="@+id/registerNameTextView"
-            android:ems="10"
-            android:hint="@string/name_example"
-            android:inputType="textPersonName" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="16dp">
 
-        <TextView
-            android:id="@+id/registerUsernameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/registerUsernameEditText"
-            android:layout_alignParentStart="true"
-            android:text="@string/username"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+            <TextView
+                android:id="@+id/textViewtTitleRegister"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
+                android:gravity="center"
+                android:text="@string/menu_SignUp"
+                android:textColor="@color/colorPrimaryDark"
+                android:textSize="28sp"
+                android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/registerUsernameEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerNameEditText"
-            android:layout_alignParentEnd="true"
-            android:ems="10"
-            android:hint="@string/username_example"
-            android:inputType="textPersonName" />
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. User Information"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorPrimaryLight"
+                android:textStyle="bold"
+                android:padding="8dp"/>
 
-        <TextView
-            android:id="@+id/registerEmailTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/registerEmailEditText"
-            android:layout_alignParentStart="true"
-            android:text="@string/email"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
-        <EditText
-            android:id="@+id/registerEmailEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerUsernameEditText"
-            android:layout_alignParentEnd="true"
-            android:ems="10"
-            android:hint="@string/email_example"
-            android:inputType="textEmailAddress" />
+                <TextView
+                    android:id="@+id/registerNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignStart="@+id/registerEmailTextView"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/name"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:typeface="normal" />
 
-        <TextView
-            android:id="@+id/registerPasswordTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/registerPasswordEditText"
-            android:layout_alignParentStart="true"
-            android:text="@string/password"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+                <EditText
+                    android:id="@+id/registerNameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/registerNameTextView"
+                    android:layout_alignStart="@+id/registerEmailEditText"
+                    android:layout_alignBottom="@+id/registerNameTextView"
+                    android:ems="10"
+                    android:hint="@string/name_example"
+                    android:inputType="textPersonName" />
 
-        <EditText
-            android:id="@+id/registerPasswordEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerEmailEditText"
-            android:layout_alignParentEnd="true"
-            android:ems="10"
-            android:inputType="textPassword" />
+                <TextView
+                    android:id="@+id/registerEmailTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/registerEmailEditText"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/email"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
 
-        <TextView
-            android:id="@+id/registerPasswordConfTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/registerPasswordConfEditText"
-            android:layout_alignParentStart="true"
-            android:text="@string/passwordConf"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+                <EditText
+                    android:id="@+id/registerEmailEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registerNameEditText"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:hint="@string/email_example"
+                    android:inputType="textEmailAddress" />
+            </RelativeLayout>
 
-        <EditText
-            android:id="@+id/registerPasswordConfEditText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerPasswordEditText"
-            android:layout_alignParentEnd="true"
-            android:ems="10"
-            android:inputType="textPassword" />
+            <TextView
+                android:id="@+id/textView5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2. Elder Information"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorPrimaryLight"
+                android:textStyle="bold"
+                android:padding="8dp"/>
 
-        <TextView
-            android:id="@+id/registerTypeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/registerRadioGroup"
-            android:layout_alignParentStart="true"
-            android:text="@string/type"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
 
-        <RadioGroup
-            android:id="@+id/registerRadioGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_alignParentEnd="true"
-            android:layout_alignStart="@+id/registerPasswordConfEditText"
-            android:ems="10"
-            android:layout_below="@+id/registerPasswordConfEditText">
+                <TextView
+                    android:id="@+id/registerElderNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignStart="@+id/registerElderBirthDateTextView"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/name_elder"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp"
+                    android:typeface="normal" />
 
-            <RadioButton android:id="@+id/registerRadioBtnAdmin"
+                <EditText
+                    android:id="@+id/registerElderNameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/registerElderNameTextView"
+                    android:layout_alignStart="@+id/registerElderBirthDateEditText"
+                    android:layout_alignBottom="@+id/registerElderNameTextView"
+                    android:ems="10"
+                    android:hint="@string/name_example"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/registerGenderTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/registerRadioGroup"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/gender"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <RadioGroup
+                    android:id="@+id/registerRadioGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignStart="@+id/registerElderBirthDateEditText"
+                    android:ems="10"
+                    android:layout_below="@+id/registerElderBirthDateEditText">
+
+                    <RadioButton android:id="@+id/registerRadioBtnFemale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/female"
+                        android:onClick="onRadioButtonClicked"/>
+
+                    <RadioButton android:id="@+id/registerRadioBtnMale"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/male"
+                        android:onClick="onRadioButtonClicked"/>
+                </RadioGroup>
+
+                <TextView
+                    android:id="@+id/registerElderBirthDateTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/registerElderBirthDateEditText"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/birth_date"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/registerElderBirthDateEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registerElderNameEditText"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:hint="@string/date_example"
+                    android:inputType="date" />
+
+                <Button
+                    android:id="@+id/selectPhotoBtn"
+                    style="@style/Widget.AppCompat.Button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registerRadioGroup"
+                    android:layout_gravity="center"
+                    android:background="@color/colorBlackTransparent"
+                    android:onClick="pickElderPhoto"
+                    android:text="@string/photo"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/textView6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3. Credentials"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorPrimaryLight"
+                android:textStyle="bold"
+                android:padding="8dp"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <TextView
+                    android:id="@+id/registerUsernameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignStart="@+id/registerPasswordTextView"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/username"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/registerUsernameEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignBaseline="@+id/registerUsernameTextView"
+                    android:layout_alignStart="@+id/registerPasswordEditText"
+                    android:layout_alignBottom="@+id/registerUsernameTextView"
+                    android:ems="10"
+                    android:hint="@string/username_example"
+                    android:inputType="textPersonName" />
+
+                <TextView
+                    android:id="@+id/registerPasswordTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/registerPasswordEditText"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/password"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/registerPasswordEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registerUsernameEditText"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+
+                <TextView
+                    android:id="@+id/registerPasswordConfTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/registerPasswordConfEditText"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/passwordConf"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/registerPasswordConfEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/registerPasswordEditText"
+                    android:layout_alignParentEnd="true"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </RelativeLayout>
+            <Button
+                android:id="@+id/registerBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/admin"
-                android:onClick="onRadioButtonClicked"/>
+                android:layout_marginTop="32dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_gravity="center"
+                android:background="@color/colorPrimaryLight"
+                android:text="@string/menu_SignUp"
+                android:textColor="@android:color/white"
+                android:onClick="register"/>
 
-            <RadioButton android:id="@+id/registerRadioBtnUser"
-                android:layout_width="wrap_content"
+            <Button
+                android:id="@+id/loginBtn"
+                style="@style/Widget.AppCompat.Button"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/normal"
-                android:onClick="onRadioButtonClicked"/>
-        </RadioGroup>
-
-        <Button
-            android:id="@+id/registerBtn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerRadioGroup"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="32dp"
-            android:background="@color/colorPrimaryLight"
-            android:text="@string/menu_SignUp"
-            android:textColor="@android:color/white"
-            android:onClick="register"/>
-
-        <Button
-            android:id="@+id/loginBtn"
-            style="@style/Widget.AppCompat.Button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/registerBtn"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="32dp"
-            android:background="@color/colorBlackTransparent"
-            android:onClick="redirectToLogin"
-            android:text="@string/alreadySigup"
-            android:textColor="@android:color/holo_blue_dark"
-            android:textStyle="bold" />
-
-    </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+                android:layout_marginBottom="32dp"
+                android:layout_gravity="center"
+                android:background="@color/colorBlackTransparent"
+                android:onClick="redirectToLogin"
+                android:text="@string/alreadySigup"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </ScrollView>

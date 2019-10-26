@@ -30,6 +30,7 @@ import com.example.tsngapp.view_managers.RegisterManager;
 public class RegisterActivity extends AppCompatActivity {
 
     private final String LOG_TAG = "RegisterActivity";
+
     private EditText nameEditText;
     private EditText usernameEditText;
     private EditText emailEditText;
@@ -167,14 +168,17 @@ public class RegisterActivity extends AppCompatActivity {
 
         // Check which radio button was clicked
         switch(view.getId()) {
-            case R.id.registerRadioBtnAdmin:
+            case R.id.registerRadioBtnFemale:
                 if (checked)
                     this.type = UserType.ADMIN;
                     break;
-            case R.id.registerRadioBtnUser:
+            case R.id.registerRadioBtnMale:
                 if (checked)
                     this.type = UserType.NORMAL;
                     break;
         }
+    }
+
+    public void pickElderPhoto(View view) {
     }
 }

@@ -18,4 +18,11 @@
     <string name="admin">Admin</string>
     <string name="normal">Normal</string>
     <string name="alreadySigup">Already have an account? Click here...</string>
+    <string name="name_elder">Elder Name:</string>
+    <string name="birth_date">Birth Date:</string>
+    <string name="gender">Gender:</string>
+    <string name="female">Female</string>
+    <string name="male">Male</string>
+    <string name="photo">Click here to pick a photo from the galery</string>
+    <string name="date_example">yyyy-mm-dd</string>
 </resources>
