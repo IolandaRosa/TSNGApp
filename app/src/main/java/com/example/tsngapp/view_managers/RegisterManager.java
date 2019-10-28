@@ -3,9 +3,13 @@ package com.example.tsngapp.view_managers;
 import com.example.tsngapp.helpers.ErrorCode;
 import com.example.tsngapp.helpers.ErrorValidator;
 import com.example.tsngapp.model.DataToSend;
+import com.example.tsngapp.model.UserGender;
 import com.example.tsngapp.model.UserType;
 
 import org.json.JSONException;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class RegisterManager {
 
@@ -20,12 +24,81 @@ public class RegisterManager {
     private RegisterManager() {
     }
 
+    public DataToSend generateJsonElderForPost(String elderName,
+                                               String elderBirthDate,
+                                               UserGender elderGender){
+
+        DataToSend dataToSend = new DataToSend();
+
+        if(ErrorValidator.getInstance().isEmpty(elderName)){
+            dataToSend.addErrorCode(ErrorCode.ELDER_NAME_EMPTY);
+        }
+
+        if(ErrorValidator.getInstance().isEmpty(elderBirthDate)){
+            dataToSend.addErrorCode(ErrorCode.ELDER_BIRTH_DATE_EMPTY);
+        }
+        else{
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            try{
+                Date convertedDate = dateFormat.parse(elderBirthDate);
+
+                Date actualDate = new Date();
+
+                long diff = actualDate.getTime()-convertedDate.getTime();
+
+                long years = diff/1000/60/60/24/365;
+
+                if(years<0 || years>200){
+                    dataToSend.addErrorCode(ErrorCode.ELDER_BIRTH_DATE_INAVLID_DATE);
+                }
+
+            }catch (Exception ex){
+                dataToSend.addErrorCode(ErrorCode.ELDER_BIRTH_DATE_INVALID_FORMAT);
+            }
+
+        }
+        if (elderGender == UserGender.UNDEFINED) {
+            dataToSend.addErrorCode(ErrorCode.GENDER_UNDEFINED);
+        }
+
+        if (dataToSend.getErrorCodes().size() > 0) {
+            return dataToSend;
+        }
+
+
+
+
+        try {
+            dataToSend.getJsonObject().put("name", elderName);
+
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+            Date convertedDate = dateFormat.parse(elderBirthDate);
+
+            dataToSend.getJsonObject().put("birth_date", convertedDate.toString());
+
+            if(elderGender==UserGender.FEMALE){
+                dataToSend.getJsonObject().put("gender", "F");
+            }else if(elderGender == UserGender.MALE){
+                dataToSend.getJsonObject().put("gender", "M");
+            }
+
+            dataToSend.getJsonObject().put("photo_url", "");
+
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return dataToSend;
+    }
+
+
     public DataToSend generateJsonForPost(String name,
                                           String username,
                                           String email,
                                           String password,
-                                          String passwordConf,
-                                          UserType type) {
+                                          String passwordConf) {
 
         DataToSend dataToSend = new DataToSend();
 
@@ -49,10 +122,6 @@ public class RegisterManager {
             dataToSend.addErrorCode(ErrorCode.PASSWORD_CONF_EMPTY);
         }
 
-        if (type == UserType.UNDEFINED) {
-            dataToSend.addErrorCode(ErrorCode.TYPE_UNDEFINED);
-        }
-
         if (!password.equals(passwordConf)) {
             dataToSend.addErrorCode(ErrorCode.PASSWORD_DONT_MATCH);
         }
@@ -66,12 +135,10 @@ public class RegisterManager {
             dataToSend.getJsonObject().put("username", username);
             dataToSend.getJsonObject().put("email", email);
             dataToSend.getJsonObject().put("password", password);
+            dataToSend.getJsonObject().put("type", "normal");
 
-            if (type == UserType.ADMIN) {
-                dataToSend.getJsonObject().put("type", "admin");
-            } else {
-                dataToSend.getJsonObject().put("type", "normal");
-            }
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
