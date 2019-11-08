@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.auth.HomeActivity"
-            android:configChanges="orientation|screenSize"></activity>
+        <activity
+            android:name=".ui.auth.HomeActivity"
+            android:configChanges="orientation|screenSize" />
         <activity android:name=".ui.RegisterActivity"
-
             android:configChanges="orientation|screenSize"/>
         <activity
             android:name=".ui.LoginActivity"

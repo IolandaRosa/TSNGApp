@@ -13,7 +13,7 @@ public class User implements Serializable {
     private String photoUrl;
 
 
-    public User(){
+    public User() {
     }
 
     public User(int id, String name, String username, String email, String type, int elder_id) {

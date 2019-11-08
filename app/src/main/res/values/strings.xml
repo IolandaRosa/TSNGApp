@@ -25,4 +25,16 @@
     <string name="male">Male</string>
     <string name="photo">Click here to pick a photo from the galery</string>
     <string name="date_example">yyyy-mm-dd</string>
+    <string name="home_last_current_values">Last electrical current values</string>
+    <string name="chart_current_no_data">No electrical current data available</string>
+    <string name="status_card_awake_failed">Failed to get status card data</string>
+    <string name="label_yes">Yes</string>
+    <string name="label_no">No</string>
+    <string name="label_awake">Awake</string>
+    <string name="label_house_state">House State</string>
+    <string name="label_inside">Inside</string>
+    <string name="label_outside">Outside</string>
+    <string name="label_weather">Weather</string>
+    <string name="label_temperature">Temperature</string>
+    <string name="label_n_a">N/A</string>
 </resources>

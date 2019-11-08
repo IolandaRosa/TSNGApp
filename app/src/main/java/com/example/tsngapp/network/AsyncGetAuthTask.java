@@ -40,8 +40,6 @@ public class AsyncGetAuthTask extends AsyncTask<String, Integer, String> {
             conn.setRequestMethod("GET");
             conn.setRequestProperty("Authorization", "Bearer "+token);
 
-
-
             //Inicia a conexão
             conn.connect();
 
