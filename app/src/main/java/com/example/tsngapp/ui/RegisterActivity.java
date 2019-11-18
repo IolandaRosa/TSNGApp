@@ -36,6 +36,8 @@ import com.example.tsngapp.network.AsyncResponse;
 import com.example.tsngapp.network.AsyncTaskAuthenticationPost;
 import com.example.tsngapp.view_managers.RegisterManager;
 
+import java.io.File;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private final String LOG_TAG = "RegisterActivity";
@@ -83,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
         //validar inputs e gerar json
         DataToSend dataToSendForUser = RegisterManager.getInstance().generateJsonForPost(name, username,email,password,passConf);
 
-        DataToSend dataToSendForElder = RegisterManager.getInstance().generateJsonElderForPost(elderName, elderBirthDate, elderGender);
+        final DataToSend dataToSendForElder = RegisterManager.getInstance().generateJsonElderForPost(elderName, elderBirthDate, elderGender);
 
         //Erros do user
         if(dataToSendForUser.getErrorCodes().size()>0
@@ -132,11 +134,11 @@ public class RegisterActivity extends AppCompatActivity {
         this.registerTask = new AsyncTaskAuthenticationPost(dataToSendForUser.getJsonObject(), new AsyncResponse() {
             @Override
             public void onTaskDone(String jsonString) {
+                User user = JsonConverterSingleton.getInstance().jsonToUser(jsonString, true);
 
-                //todo registar elder
+                DataToSend dataToSend= RegisterManager.getInstance().setTreaterIdForElder(dataToSendForElder, user.getId());
 
-                getUserAndRedirectToLogin(password, jsonString);
-
+                getUserAndRedirectToLogin(password, user);
 
             }
         });
@@ -145,10 +147,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void getUserAndRedirectToLogin(String password, String jsonString){
-
-        User user = JsonConverterSingleton.getInstance().jsonToUser(jsonString, true);
-
+    private void getUserAndRedirectToLogin(String password, User user){
         if(user != null){
             //Passar para atividade de login
             Bundle bundle = new Bundle();
@@ -291,12 +290,6 @@ public class RegisterActivity extends AppCompatActivity {
             Uri selectedImage = data.getData();
 
             String path = selectedImage.getPath();
-
-
-
-            /*File file = new File(uri.getPath());//create path from uri
-            final String[] split = file.getPath().split(":");//split the path.
-            filePath = split[1];//assign it to a string(your choice).*/
 
 
         }

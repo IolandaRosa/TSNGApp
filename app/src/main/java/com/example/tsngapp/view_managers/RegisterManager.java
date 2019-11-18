@@ -65,9 +65,6 @@ public class RegisterManager {
             return dataToSend;
         }
 
-
-
-
         try {
             dataToSend.getJsonObject().put("name", elderName);
 
@@ -91,6 +88,15 @@ public class RegisterManager {
         }
 
         return dataToSend;
+    }
+
+    public DataToSend setTreaterIdForElder (DataToSend data, int treaterId) {
+        try {
+            data.getJsonObject().put("treater_id", treaterId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return data;
     }
 
 
