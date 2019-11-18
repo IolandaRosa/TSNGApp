@@ -1,11 +1,21 @@
 package com.example.tsngapp.ui;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -13,7 +23,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.RadioButton;
-import android.widget.Toast;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
@@ -23,7 +32,6 @@ import com.example.tsngapp.helpers.JsonConverterSingleton;
 import com.example.tsngapp.model.DataToSend;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.model.UserGender;
-import com.example.tsngapp.model.UserType;
 import com.example.tsngapp.network.AsyncResponse;
 import com.example.tsngapp.network.AsyncTaskAuthenticationPost;
 import com.example.tsngapp.view_managers.RegisterManager;
@@ -31,6 +39,7 @@ import com.example.tsngapp.view_managers.RegisterManager;
 public class RegisterActivity extends AppCompatActivity {
 
     private final String LOG_TAG = "RegisterActivity";
+    private final int GALERIA =1;
 
     private EditText nameEditText;
     private EditText emailEditText;
@@ -217,6 +226,80 @@ public class RegisterActivity extends AppCompatActivity {
     public void pickElderPhoto(View view) {
 
         this.hideSoftKeyboard();
-        //todo escolher photo de galeria
+
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)!=
+                PackageManager.PERMISSION_GRANTED){
+            requestGaleryPermisson();
+        }
+        else{
+            showGaleria();
+        }
     }
+
+    private void requestGaleryPermisson(){
+        if(ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_EXTERNAL_STORAGE)){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            builder.setIconAttribute(android.R.attr.alertDialogIcon)
+                    .setTitle(R.string.title)
+                    .setMessage("The app need to access the galery?")
+                    .setCancelable(false)
+                    .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            ActivityCompat.requestPermissions(RegisterActivity.this,
+                                    new String[]{
+                                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                    }, GALERIA);
+                        }
+                    }).show();
+
+        }else{
+            ActivityCompat.requestPermissions(this,
+                    new String[]{
+                            Manifest.permission.READ_EXTERNAL_STORAGE,
+                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    }, GALERIA);
+        }
+    }
+
+    private void showGaleria(){
+        Intent i = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+
+        startActivityForResult(i, GALERIA);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if(requestCode==1){
+            if(grantResults.length>0 && grantResults[0]==PackageManager.PERMISSION_GRANTED){
+                showGaleria();
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == RESULT_CANCELED || data == null){
+            return;
+        }
+
+        if(requestCode == GALERIA && resultCode == Activity.RESULT_OK){
+            Uri selectedImage = data.getData();
+
+            String path = selectedImage.getPath();
+
+
+
+            /*File file = new File(uri.getPath());//create path from uri
+            final String[] split = file.getPath().split(":");//split the path.
+            filePath = split[1];//assign it to a string(your choice).*/
+
+
+        }
+    }
+
 }
