@@ -2,6 +2,7 @@ package com.example.tsngapp.api;
 
 import android.annotation.SuppressLint;
 
+import com.example.tsngapp.api.model.SimpleValueSensor;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.network.AsyncTaskRequest;
 import com.example.tsngapp.network.AsyncTaskResult;
@@ -17,10 +18,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 public class SMARTAAL {
-    public static class GetDoorState extends AsyncTaskRequest<GetDoorState.Data> {
+    public static class DoorState extends AsyncTaskRequest<DoorState.Data> {
         public static class Data {
             private boolean inside;
             private Date updatedAt;
@@ -48,9 +50,9 @@ public class SMARTAAL {
         }
 
         @SuppressLint("DefaultLocale")
-        public GetDoorState(int elderId, String token,
-                            OnResultListener<Data> resultListener,
-                            OnFailureListener failureListener) {
+        public DoorState(int elderId, String token,
+                         OnResultListener<Data> resultListener,
+                         OnFailureListener failureListener) {
             super(token, String.format(Constants.DOOR_STATE_URL, elderId),
                     resultListener, failureListener);
         }
@@ -65,13 +67,13 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetDoorLastValues extends AsyncTaskRequest<JSONObject> {
+    public static class DoorLastValues extends AsyncTaskRequest<JSONObject> {
         @SuppressLint("DefaultLocale")
-        public GetDoorLastValues(int elderId, int numOfValues, String token,
-                            OnResultListener<JSONObject> resultListener,
-                            OnFailureListener failureListener) {
-            super(String.format(Constants.DOOR_LAST_VALUES_URL, elderId, numOfValues),
-                    token, resultListener, failureListener);
+        public DoorLastValues(int elderId, int numOfValues, String token,
+                              OnResultListener<JSONObject> resultListener,
+                              OnFailureListener failureListener) {
+            super(token, String.format(Constants.DOOR_LAST_VALUES_URL, elderId, numOfValues),
+                    resultListener, failureListener);
         }
 
         @Override
@@ -83,11 +85,11 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetLightLastValues extends AsyncTaskRequest<String> {
+    public static class LightLastValues extends AsyncTaskRequest<String> {
         @SuppressLint("DefaultLocale")
-        public GetLightLastValues(int elderId, int numOfValues, String token,
-                            OnResultListener<String> resultListener,
-                            OnFailureListener failureListener) {
+        public LightLastValues(int elderId, int numOfValues, String token,
+                               OnResultListener<String> resultListener,
+                               OnFailureListener failureListener) {
             super(String.format(Constants.LIGHT_LAST_VALUES_URL, elderId, numOfValues),
                     token, resultListener, failureListener);
         }
@@ -100,13 +102,13 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetWindowLastValues extends AsyncTaskRequest<String> {
+    public static class WindowLastValues extends AsyncTaskRequest<String> {
         @SuppressLint("DefaultLocale")
-        public GetWindowLastValues(int elderId, int numOfValues, String token,
-                            OnResultListener<String> resultListener,
-                            OnFailureListener failureListener) {
-            super(String.format(Constants.WINDOW_LAST_VALUES_URL, elderId, numOfValues),
-                    token, resultListener, failureListener);
+        public WindowLastValues(int elderId, int numOfValues, String token,
+                                OnResultListener<String> resultListener,
+                                OnFailureListener failureListener) {
+            super(token, String.format(Constants.WINDOW_LAST_VALUES_URL, elderId, numOfValues),
+                    resultListener, failureListener);
         }
 
         @Override
@@ -117,7 +119,7 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetBedState extends AsyncTaskRequest<GetBedState.Data> {
+    public static class BedState extends AsyncTaskRequest<BedState.Data> {
         public static class Data {
             private boolean awake;
             private Date updatedAt;
@@ -145,9 +147,9 @@ public class SMARTAAL {
         }
 
         @SuppressLint("DefaultLocale")
-        public GetBedState(int elderId, String token,
-                            OnResultListener<Data> resultListener,
-                            OnFailureListener failureListener) {
+        public BedState(int elderId, String token,
+                        OnResultListener<Data> resultListener,
+                        OnFailureListener failureListener) {
             super(token, String.format(Constants.BED_STATE_URL, elderId),
                     resultListener, failureListener);
         }
@@ -162,13 +164,13 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetBedLastValues extends AsyncTaskRequest<String> {
+    public static class BedLastValues extends AsyncTaskRequest<String> {
         @SuppressLint("DefaultLocale")
-        public GetBedLastValues(int elderId, int numOfValues, String token,
-                            OnResultListener<String> resultListener,
-                            OnFailureListener failureListener) {
-            super(String.format(Constants.BED_LAST_VALUES_URL, elderId, numOfValues),
-                    token, resultListener, failureListener);
+        public BedLastValues(int elderId, int numOfValues, String token,
+                             OnResultListener<String> resultListener,
+                             OnFailureListener failureListener) {
+            super(token, String.format(Constants.BED_LAST_VALUES_URL, elderId, numOfValues),
+                    resultListener, failureListener);
         }
 
         @Override
@@ -179,24 +181,57 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetInternalTempLastValues extends AsyncTaskRequest<String> {
+    public static class InternalTempLastValues extends AsyncTaskRequest<List<InternalTempLastValues.Data>> {
+        public static class Data extends SimpleValueSensor {
+            public Data(String sensorId, float value, Date date) {
+                super(sensorId, value, date);
+            }
+
+            public Data(String sensorId, float value, String strDate) throws ParseException {
+                super(sensorId, value, strDate);
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final String dateString = jsonObject.getString("updated_at");
+                final Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dateString);
+                final String sensorId = jsonObject.has("internal_sensor_id") ?
+                        jsonObject.getString("internal_sensor_id") : null;
+
+                return new Data(sensorId, Float.valueOf(jsonObject.getString("value")), date);
+            }
+        }
+
         @SuppressLint("DefaultLocale")
-        public GetInternalTempLastValues(int elderId, int numOfValues, String token,
-                            OnResultListener<String> resultListener,
-                            OnFailureListener failureListener) {
-            super(String.format(Constants.INTERNAL_TEMP_LAST_VALUES_URL, elderId, numOfValues),
-                    token, resultListener, failureListener);
+        public InternalTempLastValues(int elderId, int numOfValues, String token,
+                                      OnResultListener<List<Data>> resultListener,
+                                      OnFailureListener failureListener) {
+            super(token, String.format(Constants.INTERNAL_TEMP_LAST_VALUES_URL, elderId, numOfValues),
+                    resultListener, failureListener);
         }
 
         @Override
-        public AsyncTaskResult<String> request() {
+        public AsyncTaskResult<List<Data>> request() throws JSONException, ParseException {
             HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String result = request.execute();
-            return new AsyncTaskResult<>(result);
+            String response = request.execute();
+            if (response.length() > 0) {
+                JSONObject jsonResponse = new JSONObject(response);
+                JSONArray data = jsonResponse.getJSONArray("data");
+
+                List<Data> sensorDataList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject obj = data.getJSONObject(i);
+                    Data sensorData = Data.fromJSON(obj);
+                    sensorDataList.add(sensorData);
+                }
+                return new AsyncTaskResult<>(sensorDataList);
+            }
+
+            return new AsyncTaskResult<>(new LinkedList<>());
         }
     }
 
-    public static class GetTemperatureValue extends AsyncTaskRequest<GetTemperatureValue.Data> {
+    public static class TemperatureValue extends AsyncTaskRequest<TemperatureValue.Data> {
         public static class Data {
             private int temperature;
             private String weather;
@@ -230,9 +265,9 @@ public class SMARTAAL {
         }
 
         @SuppressLint("DefaultLocale")
-        public GetTemperatureValue(int elderId, String token,
-                            OnResultListener<Data> resultListener,
-                            OnFailureListener failureListener) {
+        public TemperatureValue(int elderId, String token,
+                                OnResultListener<Data> resultListener,
+                                OnFailureListener failureListener) {
             super(token, String.format(Constants.TEMPERATURE_VALUE_URL, elderId),
                     resultListener, failureListener);
         }
@@ -247,53 +282,32 @@ public class SMARTAAL {
         }
     }
 
-    public static class GetCurrentLastValues extends AsyncTaskRequest<List<GetCurrentLastValues.Data>> {
-        public static class Data {
-            private int id;
-            private int currentSensorId;
-            private float value;
-            private Date date;
-
-            public int getId() {
-                return id;
+    public static class CurrentLastValues extends AsyncTaskRequest<List<CurrentLastValues.Data>> {
+        public static class Data extends SimpleValueSensor {
+            public Data(String sensorId, float value, Date date) {
+                super(sensorId, value, date);
             }
 
-            public int getCurrentSensorId() {
-                return currentSensorId;
-            }
-
-            public float getValue() {
-                return value;
-            }
-
-            public Date getDate() {
-                return date;
-            }
-
-            public Data(int id, int currentSensorId, float value, Date date) {
-                this.id = id;
-                this.currentSensorId = currentSensorId;
-                this.value = value;
-                this.date = date;
+            public Data(String sensorId, float value, String strDate) throws ParseException {
+                super(sensorId, value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
             public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
                 final String dateString = jsonObject.getString("date");
                 final Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dateString);
-                return new Data(
-                        jsonObject.getInt("id"),
-                        jsonObject.getInt("corrent_sensor_id"),
-                        Float.valueOf(jsonObject.getString("temperature")),
-                        date
-                );
+                final Integer sensorId = jsonObject.has("corrent_sensor_id") ?
+                        jsonObject.getInt("corrent_sensor_id") : null;
+
+                return new Data(String.valueOf(sensorId),
+                        Float.valueOf(jsonObject.getString("value")), date);
             }
         }
 
         @SuppressLint("DefaultLocale")
-        public GetCurrentLastValues(int elderId, int numOfValues, String token,
-                                    OnResultListener<List<Data>> resultListener,
-                                    OnFailureListener failureListener) {
+        public CurrentLastValues(int elderId, int numOfValues, String token,
+                                 OnResultListener<List<Data>> resultListener,
+                                 OnFailureListener failureListener) {
             super(token, String.format(Constants.ELECTRICAL_CURRENT_LAST_VALUES_URL, elderId, numOfValues),
                     resultListener, failureListener);
         }

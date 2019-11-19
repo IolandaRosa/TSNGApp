@@ -26,6 +26,9 @@ public class Constants {
     public static final String INTERNAL_TEMP_LAST_VALUES_URL = BASE_URL + "internaltemp/%d/lastValues/%d";
     public static final String ELECTRICAL_CURRENT_LAST_VALUES_URL = BASE_URL + "current/%d/lastValues/%d";
 
+    public static final Integer CURRENT_CHART_MAX_VALUES = 5;
+    public static final Integer TEMPERATURE_CHART_MAX_VALUES = 5;
+
     //Activities
     public static final int REGISTER_ACTIVITY_CODE = 1;
     public static final String INTENT_USER_KEY = "user";
@@ -34,6 +37,11 @@ public class Constants {
     //API_RESPONSES
     public static final String HTTP_OK = "Success";
     public static final String HTTP_ERROR = "Error";
+
+    public static class Pusher {
+        public static final String CHANNEL_CURRENT = "new.current.value";
+        public static final String EVENT_NEW_CURRENT_VALUE= "App\\Events\\NewCurrentValueEvent";
+    }
 }
 
 

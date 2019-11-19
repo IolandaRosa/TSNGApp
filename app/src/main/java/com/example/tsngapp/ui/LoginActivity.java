@@ -26,7 +26,6 @@ import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncGetAuthTask;
 import com.example.tsngapp.network.AsyncResponse;
 import com.example.tsngapp.network.AsyncTaskAuthenticationPost;
-import com.example.tsngapp.ui.auth.HomeActivity;
 import com.example.tsngapp.view_managers.LoginManager;
 
 
@@ -187,10 +186,9 @@ public class LoginActivity extends AppCompatActivity {
                     user.setAcessToken(token);
 
                     Bundle bundle = new Bundle();
+                    bundle.putParcelable(Constants.INTENT_USER_KEY, user);
 
-                    bundle.putSerializable(Constants.INTENT_USER_KEY, user);
-
-                    Intent i = new Intent(LoginActivity.this, HomeActivity.class);
+                    Intent i = new Intent(LoginActivity.this, LoggedInActivity.class);
 
                     i.putExtras(bundle);
 

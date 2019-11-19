@@ -143,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity {
         if(user != null){
             //Passar para atividade de login
             Bundle bundle = new Bundle();
-            bundle.putSerializable(Constants.INTENT_USER_KEY,user);
+            bundle.putParcelable(Constants.INTENT_USER_KEY, user);
             bundle.putString(Constants.INTENT_PASSWORD_KEY, password);
 
             Intent intent = new Intent();

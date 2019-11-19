@@ -3,10 +3,10 @@
     <string name="menu_Home">Home</string>
     <string name="menu_Login">Login</string>
     <string name="menu_Logout">Logout</string>
-    <string name="menu_MyProfile">Perfil</string>
+    <string name="menu_MyProfile">Profile</string>
     <string name="password">Password:</string>
     <string name="menu_SignUp">Register User</string>
-    <string name="title">Atention</string>
+    <string name="title">Attention</string>
     <string name="name">Name:</string>
     <string name="name_example">António José Moreira</string>
     <string name="username">Username:</string>
@@ -17,13 +17,13 @@
     <string name="passwordConf">Pass Confirmation:</string>
     <string name="admin">Admin</string>
     <string name="normal">Normal</string>
-    <string name="alreadySigup">Already have an account? Click here...</string>
+    <string name="alreadySigup">Already have an account? Click here…</string>
     <string name="name_elder">Elder Name:</string>
     <string name="birth_date">Birth Date:</string>
     <string name="gender">Gender:</string>
     <string name="female">Female</string>
     <string name="male">Male</string>
-    <string name="photo">Click here to pick a photo from the galery</string>
+    <string name="photo">Click here to pick a photo from the gallery</string>
     <string name="date_example">yyyy-mm-dd</string>
     <string name="home_last_current_values">Last electrical current values</string>
     <string name="chart_current_no_data">No electrical current data available</string>
@@ -37,4 +37,11 @@
     <string name="label_weather">Weather</string>
     <string name="label_temperature">Temperature</string>
     <string name="label_n_a">N/A</string>
+    <string name="label_home">Home</string>
+    <string name="label_profile">Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="home_last_temperature_values">Last internal temperature values</string>
+    <string name="chart_temperature_no_data">No internal temperature data available</string>
 </resources>
