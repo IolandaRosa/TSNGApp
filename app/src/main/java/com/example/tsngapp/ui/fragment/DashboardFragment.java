@@ -40,6 +40,7 @@ import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.google.android.material.card.MaterialCardView;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
+import com.pusher.client.channel.SubscriptionEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -78,7 +79,7 @@ public class DashboardFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            user = getArguments().getParcelable(PARAM_USER);
+            this.user = getArguments().getParcelable(PARAM_USER);
         }
 
         this.currentChartEntries = new LinkedList<>();
@@ -111,7 +112,6 @@ public class DashboardFragment extends Fragment {
         pusher
             .subscribe(Constants.Pusher.CHANNEL_CURRENT)
             .bind(Constants.Pusher.EVENT_NEW_CURRENT_VALUE, event -> {
-                Log.d("DEBUG_TSNGApp", event.toString());
                 try {
                     final String data = event.getData();
                     final JSONArray arr = new JSONObject(data).getJSONArray("values");
@@ -127,18 +127,36 @@ public class DashboardFragment extends Fragment {
                                 Constants.CURRENT_CHART_MAX_VALUES, sensorData);
                     }
                 } catch (JSONException | ParseException e) {
-                    Log.d("DEBUG_TSNGApp", "Failed to parse data from Pusher channel" +
-                            Constants.Pusher.CHANNEL_CURRENT + ", event " +
-                            Constants.Pusher.EVENT_NEW_CURRENT_VALUE);
+                    Log.d(Constants.DEBUG_TAG, String.format(
+                            "Failed to parse %s EVENT from Pusher %s CHANNEL",
+                            Constants.Pusher.CHANNEL_CURRENT,
+                            Constants.Pusher.EVENT_NEW_CURRENT_VALUE));
                 }
             });
+
+        final SubscriptionEventListener subscriptionEventListener = event -> {
+            Log.d(Constants.DEBUG_TAG, String.format(
+                    "New %s EVENT from Pusher %s CHANNEL (No action)",
+                    event.getChannelName(), event.getEventName()));
+        };
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_INTERNAL_TEMP)
+            .bind(Constants.Pusher.EVENT_NEW_INTERNAL_TEMP_VALUE, subscriptionEventListener);
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_BED_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_BED_VALUE, subscriptionEventListener);
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_DOOR_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_DOOR_VALUE, subscriptionEventListener);
 
         pusher.connect();
     }
 
-    private OnFailureListener genericInfoInitFailed = e -> {
-        Log.d("DEBUG_TSNGApp", "loadStatusCards(): " + e.getMessage());
-    };
+    private void logStatusCardInitFailure(Exception e, String actionName) {
+        Log.d(Constants.DEBUG_TAG, String.format(
+                "Couldn't initialize dashboard status card (%s), there may be no data available: %s",
+                actionName, e.getMessage()));
+    }
 
     private void updateBedState(boolean isAwake) {
         final ImageView iconView = bedStateView.findViewById(R.id.iv_card_icon_home_status);
@@ -225,14 +243,20 @@ public class DashboardFragment extends Fragment {
 
     private void loadStatusCards() {
         final SMARTAAL.BedState getBedState = new SMARTAAL.BedState(user.getElder_id(),
-                user.getAcessToken(), state -> updateBedState(state.isAwake()), genericInfoInitFailed);
+                user.getAcessToken(),
+                state -> updateBedState(state.isAwake()),
+                e -> logStatusCardInitFailure(e, "getBedState"));
         final SMARTAAL.DoorState getDoorState = new SMARTAAL.DoorState(user.getElder_id(),
-                user.getAcessToken(), state -> updateDoorState(state.isInside()), genericInfoInitFailed);
+                user.getAcessToken(),
+                state -> updateDoorState(state.isInside()),
+                e -> logStatusCardInitFailure(e, "getDoorState"));
         final SMARTAAL.TemperatureValue getWeatherAndTemperature = new SMARTAAL.TemperatureValue(
-                user.getElder_id(), user.getAcessToken(), state -> {
-            updateWeatherState(state.getWeather());
-            updateTemperatureState(state.getTemperature());
-        }, genericInfoInitFailed);
+                user.getElder_id(), user.getAcessToken(),
+                state -> {
+                    updateWeatherState(state.getWeather());
+                    updateTemperatureState(state.getTemperature());
+                },
+                e -> logStatusCardInitFailure(e, "getWeatherAndTemperature"));
 
         getBedState.execute();
         getDoorState.execute();

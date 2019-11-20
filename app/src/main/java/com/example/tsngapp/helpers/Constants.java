@@ -1,6 +1,7 @@
 package com.example.tsngapp.helpers;
 
 public class Constants {
+    public static final String DEBUG_TAG = "DEBUG_TSNGApp";
 
     //SHARED_PREFS
     public static final String SHARED_PREFS_NAME = "TSNGApp";
@@ -40,7 +41,19 @@ public class Constants {
 
     public static class Pusher {
         public static final String CHANNEL_CURRENT = "new.current.value";
+        public static final String CHANNEL_INTERNAL_TEMP = "new.internaltemp.value";
+        public static final String CHANNEL_DOOR_VALUE = "new.door.value";
+        public static final String CHANNEL_LIGHT_VALUE = "new.light.value";
+        public static final String CHANNEL_BED_VALUE = "new.bed.value";
+        public static final String CHANNEL_WINDOW_VALUE = "new.window.value";
+        public static final String CHANNEL_DIVISION_VALUE = "new.division.value";
         public static final String EVENT_NEW_CURRENT_VALUE= "App\\Events\\NewCurrentValueEvent";
+        public static final String EVENT_NEW_INTERNAL_TEMP_VALUE= "App\\Events\\NewInternalTemperatureValueEvent";
+        public static final String EVENT_NEW_DOOR_VALUE= "App\\Events\\NewDoorValueEvent";
+        public static final String EVENT_NEW_LIGHT_VALUE= "App\\Events\\NewLightValueEvent";
+        public static final String EVENT_NEW_BED_VALUE= "App\\Events\\NewBedValueEvent";
+        public static final String EVENT_NEW_WINDOW_VALUE= "App\\Events\\NewWindowValueEvent";
+        public static final String EVENT_NEW_DIVISION_VALUE= "App\\Events\\NewDivisionValueEvent";
     }
 }
 

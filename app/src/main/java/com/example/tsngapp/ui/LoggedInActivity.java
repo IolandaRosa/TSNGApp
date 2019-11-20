@@ -2,11 +2,13 @@ package com.example.tsngapp.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DialogUtil;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
 import com.example.tsngapp.ui.fragment.DashboardFragment;
@@ -23,16 +26,16 @@ import com.example.tsngapp.ui.fragment.ProfileFragment;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class LoggedInActivity extends AppCompatActivity {
+public class LoggedInActivity extends AppCompatActivity implements
+        ProfileFragment.ProfileFragmentActionListener {
 
     private BottomNavigationView bottomNav;
 
     private User user;
-    private AsyncTaskPostLogout logoutTask;
 
     private FragmentManager fragmentManager;
-    private Fragment dashboardFragment;
-    private Fragment profileFragment;
+    private DashboardFragment dashboardFragment;
+    private ProfileFragment profileFragment;
     private Fragment activeFragment;
 
     @Override
@@ -50,7 +53,8 @@ public class LoggedInActivity extends AppCompatActivity {
         fragmentManager = getSupportFragmentManager();
 
 
-        profileFragment = ProfileFragment.newInstance();
+        profileFragment = ProfileFragment.newInstance(user);
+        profileFragment.setActionListener(this);
         dashboardFragment = DashboardFragment.newInstance(user);
         fragmentManager
                 .beginTransaction()
@@ -62,22 +66,6 @@ public class LoggedInActivity extends AppCompatActivity {
                 .add(R.id.frame_container, dashboardFragment, "dashboard")
                 .commit();
         activeFragment = dashboardFragment;
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.auth_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            case R.id.action_logout:
-                makeLogout();
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
@@ -107,27 +95,35 @@ public class LoggedInActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    private void makeLogout(){
-        this.logoutTask = new AsyncTaskPostLogout(jsonString -> {
-            if(jsonString.equals(Constants.HTTP_OK)){
-                Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
+    private void makeLogout() {
+        new AsyncTaskPostLogout(jsonString -> {
+                if (jsonString.equals(Constants.HTTP_OK)) {
+                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
 
-                //todo - retira token das shared preferences e coloca user a null e passa para a login activity
-                user = null;
-                LoginManager.getInstance().removeFromSharedPreference(this);
+                    //todo - retira token das shared preferences e coloca user a null e passa para a login activity
+                    user = null;
+                    LoginManager.getInstance().removeFromSharedPreference(this);
 
-                startActivity(new Intent(this, LoginActivity.class));
-                this.finish();
-            }
-            else{
-                Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
-            }
-        }, user.getAcessToken());
-
-        logoutTask.execute(Constants.LOGOUT_URL);
+                    startActivity(new Intent(this, LoginActivity.class));
+                    this.finish();
+                } else {
+                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
+                }
+            }, user.getAcessToken()
+        ).execute(Constants.LOGOUT_URL);
     }
 
     private void bindViews() {
         bottomNav = findViewById(R.id.bnv_logged_in_navigation);
+    }
+
+    @Override
+    public void onLogoutClicked() {
+        DialogUtil.createOkCancelDialog(this, null, R.string.logout_confirmation,
+            (dialog, which) -> {
+                if (which == AlertDialog.BUTTON_POSITIVE) {
+                    makeLogout();
+                }
+            }).show();
     }
 }
