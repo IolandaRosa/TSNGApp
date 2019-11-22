@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
+import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
 import com.example.tsngapp.ui.fragment.DashboardFragment;
@@ -32,6 +33,7 @@ public class LoggedInActivity extends AppCompatActivity implements
     private BottomNavigationView bottomNav;
 
     private User user;
+    private Elder elder;
 
     private FragmentManager fragmentManager;
     private DashboardFragment dashboardFragment;
@@ -49,11 +51,11 @@ public class LoggedInActivity extends AppCompatActivity implements
         Intent intent = this.getIntent();
         Bundle extras = intent.getExtras();
         user = extras.getParcelable(Constants.INTENT_USER_KEY);
+        elder = extras.getParcelable(Constants.INTENT_ELDER_KEY);
 
         fragmentManager = getSupportFragmentManager();
 
-
-        profileFragment = ProfileFragment.newInstance(user);
+        profileFragment = ProfileFragment.newInstance(user, elder);
         profileFragment.setActionListener(this);
         dashboardFragment = DashboardFragment.newInstance(user);
         fragmentManager

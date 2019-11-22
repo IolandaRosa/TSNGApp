@@ -15,13 +15,15 @@ import androidx.annotation.Nullable;
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DrawableUtil;
+import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
 import com.example.tsngapp.ui.LoginActivity;
 import com.example.tsngapp.view_managers.LoginManager;
 
 public class ProfileFragment extends BaseFragment {
-    public static final String PARAM_USER = "PARAM_USER";
+    public static final String PARAM_USER = "ProfileFragment.PARAM_USER";
+    public static final String PARAM_ELDER = "ProfileFragment.PARAM_ELDER";
 
     private ProfileFragmentActionListener actionListener;
 
@@ -32,13 +34,15 @@ public class ProfileFragment extends BaseFragment {
     private TextView btnLogout;
 
     private User user;
+    private Elder elder;
 
     public ProfileFragment() {}
 
-    public static ProfileFragment newInstance(User user) {
+    public static ProfileFragment newInstance(User user, Elder elder) {
         ProfileFragment fragment = new ProfileFragment();
         Bundle args = new Bundle();
         args.putParcelable(PARAM_USER, user);
+        args.putParcelable(PARAM_ELDER, elder);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,7 +52,13 @@ public class ProfileFragment extends BaseFragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             this.user = getArguments().getParcelable(PARAM_USER);
+            this.elder = getArguments().getParcelable(PARAM_ELDER);
         }
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.fragment_profile;
     }
 
     @Override
@@ -65,8 +75,8 @@ public class ProfileFragment extends BaseFragment {
 
     private void fillProfileInfo() {
         if (user != null) {
-            if (!user.getPhotoUrl().isEmpty()) {
-                new DrawableUtil.DownloadImageTask(user.getPhotoUrl(), bitmap -> {
+            if (!elder.getPhotoUrl().isEmpty()) {
+                new DrawableUtil.DownloadImageTask(elder.getPhotoUrl(), bitmap -> {
                     ivProfilePicture.setImageBitmap(bitmap);
                 }).execute();
             }
@@ -74,11 +84,6 @@ public class ProfileFragment extends BaseFragment {
             tvUsername.setText(user.getUsername());
             tvEmail.setText(user.getEmail());
         }
-    }
-
-    @Override
-    protected int getLayoutResourceId() {
-        return R.layout.fragment_profile;
     }
 
     private View.OnClickListener logoutClickListener = view -> {

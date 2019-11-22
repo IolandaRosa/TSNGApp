@@ -171,8 +171,9 @@
                 android:id="@+id/iv_profile_picture"
                 android:layout_width="128dp"
                 android:layout_height="128dp"
-                android:src="@drawable/ic_person_black_24dp"
-                android:contentDescription="Profile picture" />
+                android:contentDescription="Profile picture"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_person_black_24dp" />
         </com.google.android.material.card.MaterialCardView>
     </FrameLayout>
 </ScrollView>

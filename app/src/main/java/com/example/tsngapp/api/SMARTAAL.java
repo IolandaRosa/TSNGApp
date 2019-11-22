@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 
 import com.example.tsngapp.api.model.SimpleValueSensor;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.network.AsyncTaskRequest;
 import com.example.tsngapp.network.AsyncTaskResult;
 import com.example.tsngapp.network.HTTPGETRequest;
@@ -22,6 +23,25 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SMARTAAL {
+    public static class ElderInfo extends AsyncTaskRequest<Elder> {
+        @SuppressLint("DefaultLocale")
+        public ElderInfo(int userId, String token,
+                         OnResultListener<Elder> resultListener,
+                         OnFailureListener failureListener) {
+            super(token, String.format(Constants.ELDER_INFO_URL, userId),
+                    resultListener, failureListener);
+        }
+
+        @Override
+        public AsyncTaskResult<Elder> request() throws JSONException, ParseException {
+            HTTPGETRequest request = new HTTPGETRequest(token, url);
+            String response = request.execute();
+            JSONObject jsonResponse = new JSONObject(response);
+            Elder data = Elder.fromJSON(jsonResponse);
+            return new AsyncTaskResult<>(data);
+        }
+    }
+
     public static class DoorState extends AsyncTaskRequest<DoorState.Data> {
         public static class Data {
             private boolean inside;

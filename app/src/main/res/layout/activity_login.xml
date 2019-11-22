@@ -23,7 +23,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginTop="32dp"
             android:background="@color/colorPrimaryLight"
-            android:onClick="login"
+            android:onClick="loginButtonClicked"
             android:text="@string/menu_Login"
             android:textColor="@android:color/white" />
 

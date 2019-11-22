@@ -13,9 +13,7 @@ public class User implements Parcelable {
     private String acessToken;
     private String photoUrl;
 
-
-    public User() {
-    }
+    public User() {}
 
     public User(int id, String name, String username, String email, String type, int elder_id) {
         this.id = id;
