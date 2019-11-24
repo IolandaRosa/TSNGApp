@@ -5,6 +5,8 @@ import android.os.Bundle;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
@@ -52,11 +54,11 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends BaseFragment {
     public static final String PARAM_USER = "PARAM_USER";
 
     private LineChart chartElectricalCurrent, chartTemperature;
-    private View rootView, currentChartView, temperatureChartView,
+    private View currentChartView, temperatureChartView,
             bedStateView, doorStateView, weatherStateView, temperatureStateView;
     private TextView tvStatusAwake, tvStatusInside, tvStatusWeather, tvStatusTemperature;
     private ImageView bedStateIcon, doorStateIcon, weatherStateIcon, temperatureStateIcon;
@@ -87,16 +89,18 @@ public class DashboardFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+    protected void onCreateViewActions(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         bindViews();
         setupStaticResources();
         loadStatusCards();
         initializeCharts();
         loadLineChartLastValues();
         bindSockets();
-        return rootView;
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.fragment_dashboard;
     }
 
     private void initializeCharts() {
