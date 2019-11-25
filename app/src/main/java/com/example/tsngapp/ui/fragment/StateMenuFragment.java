@@ -33,17 +33,6 @@ public class StateMenuFragment extends BaseFragment {
         return R.layout.fragment_state_menu;
     }
 
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof FragmentActionListener) {
-            actionListener = (FragmentActionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }
-    }
-
     private void setupMenuButtons() {
         final View currentMenuItemView = rootView.findViewById(R.id.menu_item_current);
         ((ImageView) currentMenuItemView.findViewById(R.id.iv_item_state_menu_icon))
