@@ -39,7 +39,6 @@
     <string name="label_n_a">N/A</string>
     <string name="label_home">Home</string>
     <string name="label_profile">Profile</string>
-
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="home_last_temperature_values">Last internal temperature values</string>
     <string name="chart_temperature_no_data">No internal temperature data available</string>
@@ -49,4 +48,16 @@
     <string name="label_ok">Ok</string>
     <string name="label_cancel">Cancel</string>
     <string name="logout_confirmation">Are you sure you want to log out?</string>
+    <string name="label_state">State</string>
+    <string name="cd_state_menu_icon">House state menu icon</string>
+    <string name="cd_state_menu_arrow_icon">House state menu open arrow icon</string>
+    <string name="label_bed_state">Bed state</string>
+    <string name="label_current_state">Electrical current state</string>
+    <string name="label_door_state">Outside door</string>
+    <string name="label_camera_state">Camera registries</string>
+    <string name="label_division_state">House division state</string>
+    <string name="label_internal_temp_state">Internal temperature</string>
+    <string name="label_window_state">House windows</string>
+    <string name="label_lights_state">House lights</string>
+    <string name="label_sos_state">SOS button</string>
 </resources>

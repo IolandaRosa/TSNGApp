@@ -6,6 +6,11 @@
         android:title="@string/label_home" />
 
     <item
+        android:id="@+id/navigation_state"
+        android:icon="@drawable/ic_mdi_home_account_black_24dp"
+        android:title="@string/label_state" />
+
+    <item
         android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_person_black_24dp"
         android:title="@string/label_profile" />

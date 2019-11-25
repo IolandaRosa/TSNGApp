@@ -1,6 +1,5 @@
 package com.example.tsngapp.ui;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -8,12 +7,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.SparseArray;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
@@ -24,6 +19,8 @@ import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
 import com.example.tsngapp.ui.fragment.DashboardFragment;
 import com.example.tsngapp.ui.fragment.ProfileFragment;
+import com.example.tsngapp.ui.fragment.StateFragment;
+import com.example.tsngapp.ui.fragment.StateMenuFragment;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -37,6 +34,7 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     private FragmentManager fragmentManager;
     private DashboardFragment dashboardFragment;
+    private StateFragment stateFragment;
     private ProfileFragment profileFragment;
     private Fragment activeFragment;
 
@@ -57,15 +55,21 @@ public class LoggedInActivity extends AppCompatActivity implements
 
         profileFragment = ProfileFragment.newInstance(user, elder);
         profileFragment.setActionListener(this);
+        stateFragment = new StateFragment();
         dashboardFragment = DashboardFragment.newInstance(user);
         fragmentManager
                 .beginTransaction()
-                .add(R.id.frame_container, profileFragment, "profile")
+                .add(R.id.main_fragment_container, profileFragment, "profile")
                 .hide(profileFragment)
                 .commit();
         fragmentManager
                 .beginTransaction()
-                .add(R.id.frame_container, dashboardFragment, "dashboard")
+                .add(R.id.main_fragment_container, stateFragment, "state")
+                .hide(profileFragment)
+                .commit();
+        fragmentManager
+                .beginTransaction()
+                .add(R.id.main_fragment_container, dashboardFragment, "dashboard")
                 .commit();
         activeFragment = dashboardFragment;
     }
@@ -74,6 +78,9 @@ public class LoggedInActivity extends AppCompatActivity implements
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 loadFragment(R.string.label_home, dashboardFragment);
+                return true;
+            case R.id.navigation_state:
+                loadFragment(R.string.label_house_state, stateFragment);
                 return true;
             case R.id.navigation_profile:
                 loadFragment(R.string.label_profile, profileFragment);

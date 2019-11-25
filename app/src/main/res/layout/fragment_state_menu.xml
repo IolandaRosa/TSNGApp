@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.fragment.StateMenuFragment"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/menu_item_current"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_door"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_bed"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_camera"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_divisions"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_internal_temp"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_windows"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_lights"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/md_grey_300"/>
+    <include
+        android:id="@+id/menu_item_sos"
+        layout="@layout/item_state_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
