@@ -65,7 +65,7 @@ public class LoggedInActivity extends AppCompatActivity implements
         fragmentManager
                 .beginTransaction()
                 .add(R.id.main_fragment_container, stateFragment, "state")
-                .hide(profileFragment)
+                .hide(stateFragment)
                 .commit();
         fragmentManager
                 .beginTransaction()
