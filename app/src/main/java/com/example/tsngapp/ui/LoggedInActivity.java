@@ -74,6 +74,29 @@ public class LoggedInActivity extends AppCompatActivity implements
         activeFragment = dashboardFragment;
     }
 
+    @Override
+    public void onBackPressed() {
+//        final boolean bsEmpty = fragmentManager != null && fragmentManager.getBackStackEntryCount() == 0;
+//        if (!bsEmpty) {
+//            fragmentManager.popBackStack();
+//            final String name = fragmentManager.getBackStackEntryAt(0).getName();
+//            changeNavActiveButtom(name);
+//        }
+
+        // TODO: Fix back presses
+        super.onBackPressed();
+    }
+
+    private void changeNavActiveButtom(String className) {
+        if (className.equals(ProfileFragment.class.getName())) {
+            bottomNav.setSelectedItemId(R.id.navigation_profile);
+        } else if (className.equals(StateFragment.class.getName())) {
+            bottomNav.setSelectedItemId(R.id.navigation_state);
+        } else {
+            bottomNav.setSelectedItemId(R.id.navigation_home);
+        }
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
         switch (item.getItemId()) {
             case R.id.navigation_home:
@@ -94,6 +117,11 @@ public class LoggedInActivity extends AppCompatActivity implements
     }
 
     private void loadFragment(String title, Fragment fragment) {
+        final String fragmentName = fragment.getClass().getSimpleName();
+        if (activeFragment.getClass().getSimpleName().equals(fragmentName)) {
+            return;
+        }
+
         getSupportActionBar().setTitle(title);
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction()

@@ -60,4 +60,5 @@
     <string name="label_window_state">House windows</string>
     <string name="label_lights_state">House lights</string>
     <string name="label_sos_state">SOS button</string>
+    <string name="state_menu_back">Go back to the main menu</string>
 </resources>

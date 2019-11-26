@@ -8,4 +8,18 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="StateMenuBackButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="iconPadding">32dp</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="cornerRadius">0dp</item>
+        <item name="rippleColor">@color/md_grey_400</item>
+        <item name="icon">@drawable/ic_navigate_before_black_24dp</item>
+        <item name="iconTint">@color/md_grey_500</item>
+        <item name="android:textColor">@color/md_grey_500</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:text">@string/state_menu_back</item>
+    </style>
 </resources>

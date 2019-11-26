@@ -13,15 +13,18 @@ import androidx.fragment.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.ui.fragment.listener.StateMenuFragmentActionListener;
 
 /**
  * Fragment for the house and elder detailed state
  */
 public class StateFragment extends BaseFragment
-    implements StateMenuFragment.FragmentActionListener{
+    implements StateMenuFragment.FragmentActionListener,
+        StateMenuFragmentActionListener {
 
     private FragmentManager fragmentManager;
 
@@ -39,16 +42,30 @@ public class StateFragment extends BaseFragment
     }
 
     private void loadFragment(Fragment fragment) {
+        // TODO: Fix back presses
+
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction()
-                .addToBackStack(fragment.getClass().getSimpleName())
                 .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
                 .replace(R.id.state_fragment_container, fragment);
         transaction.commit();
     }
 
+
+
     @Override
-    public void onMenuItemClicked(Class fragmentClass) {
-        Toast.makeText(rootView.getContext(), fragmentClass.getSimpleName(), Toast.LENGTH_SHORT).show();
+    public void onMenuItemClicked(StateMenuFragment.MenuItem item) {
+        switch (item) {
+            case CURRENT:
+                loadFragment(new ElectricalCurrentStateFragment());
+                break;
+            default:
+                loadFragment(new StateMenuFragment());
+        }
+    }
+
+    @Override
+    public void onBackToMenuPressed() {
+        loadFragment(new StateMenuFragment());
     }
 }

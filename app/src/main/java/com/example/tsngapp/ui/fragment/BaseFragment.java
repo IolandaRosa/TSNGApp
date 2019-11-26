@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 public abstract class BaseFragment extends Fragment {
+    /**
+     * View returned from the layout inflater, useful to get context on fragments
+     */
     protected View rootView;
 
     @Nullable
@@ -21,9 +24,19 @@ public abstract class BaseFragment extends Fragment {
         return rootView;
     }
 
+    /**
+     * Actions that would be called on the onCreateView lifecycle event
+     * @param inflater
+     * @param container
+     * @param savedInstanceState
+     */
     protected abstract void onCreateViewActions(@NonNull LayoutInflater inflater,
                                                 @Nullable ViewGroup container,
                                                 @Nullable Bundle savedInstanceState);
 
+    /**
+     * Gets returns the id of the fragment layout resource to inflate on the onCreateView
+     * @return the id of the fragment layout resource
+     */
     protected abstract int getLayoutResourceId();
 }

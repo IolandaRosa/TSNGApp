@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="StateMenuItem">
+        <attr name="menuIcon" format="integer"/>
+        <attr name="menuLabel" format="string"/>
+        <attr name="showDivider" format="boolean"/>
+    </declare-styleable>
+</resources>
