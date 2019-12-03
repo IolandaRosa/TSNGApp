@@ -1,6 +1,7 @@
 package com.example.tsngapp.ui;
 
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -12,31 +13,34 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
-import com.example.tsngapp.model.Elder;
-import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
 import com.example.tsngapp.ui.fragment.DashboardFragment;
 import com.example.tsngapp.ui.fragment.ProfileFragment;
 import com.example.tsngapp.ui.fragment.StateFragment;
-import com.example.tsngapp.ui.fragment.StateMenuFragment;
+import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class LoggedInActivity extends AppCompatActivity implements
-        ProfileFragment.ProfileFragmentActionListener {
+        ProfileFragment.ProfileFragmentActionListener,
+        BaseFragmentActionListener {
 
     private BottomNavigationView bottomNav;
 
-    private User user;
-    private Elder elder;
-
+    private ActionBar actionBar;
     private FragmentManager fragmentManager;
     private DashboardFragment dashboardFragment;
     private StateFragment stateFragment;
     private ProfileFragment profileFragment;
     private Fragment activeFragment;
+
+    /**
+     * Auxiliary variable to save the action bar subtitle when changing fragments
+     */
+    private @StringRes Integer currentSubtitleStringRes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,17 +50,12 @@ public class LoggedInActivity extends AppCompatActivity implements
         bindViews();
         bottomNav.setOnNavigationItemSelectedListener(navItemClickListener);
 
-        Intent intent = this.getIntent();
-        Bundle extras = intent.getExtras();
-        user = extras.getParcelable(Constants.INTENT_USER_KEY);
-        elder = extras.getParcelable(Constants.INTENT_ELDER_KEY);
-
         fragmentManager = getSupportFragmentManager();
 
-        profileFragment = ProfileFragment.newInstance(user, elder);
+        profileFragment = new ProfileFragment();
         profileFragment.setActionListener(this);
-        stateFragment = new StateFragment();
-        dashboardFragment = DashboardFragment.newInstance(user);
+        stateFragment = new StateFragment(this);
+        dashboardFragment = new DashboardFragment();
         fragmentManager
                 .beginTransaction()
                 .add(R.id.main_fragment_container, profileFragment, "profile")
@@ -85,6 +84,26 @@ public class LoggedInActivity extends AppCompatActivity implements
 
         // TODO: Fix back presses
         super.onBackPressed();
+    }
+
+    @Override
+    public void onLogoutClicked() {
+        DialogUtil.createOkCancelDialog(this, null, R.string.logout_confirmation,
+            (dialog, which) -> {
+                if (which == AlertDialog.BUTTON_POSITIVE) {
+                    makeLogout();
+                }
+            }).show();
+    }
+
+    @Override
+    public void setTitleFromFragment(Integer title) {
+        if (title != null) {
+            actionBar.setSubtitle(title);
+        } else {
+            actionBar.setSubtitle(null);
+        }
+        currentSubtitleStringRes = title;
     }
 
     private void changeNavActiveButtom(String className) {
@@ -122,7 +141,13 @@ public class LoggedInActivity extends AppCompatActivity implements
             return;
         }
 
-        getSupportActionBar().setTitle(title);
+        actionBar.setTitle(title);
+        if (currentSubtitleStringRes != null && fragment instanceof StateFragment) {
+            actionBar.setSubtitle(currentSubtitleStringRes);
+        } else {
+            actionBar.setSubtitle(null);
+        }
+
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
@@ -138,7 +163,7 @@ public class LoggedInActivity extends AppCompatActivity implements
                     Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
 
                     //todo - retira token das shared preferences e coloca user a null e passa para a login activity
-                    user = null;
+                    AuthManager.getInstance().setUser(null);
                     LoginManager.getInstance().removeFromSharedPreference(this);
 
                     startActivity(new Intent(this, LoginActivity.class));
@@ -146,21 +171,12 @@ public class LoggedInActivity extends AppCompatActivity implements
                 } else {
                     Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
                 }
-            }, user.getAcessToken()
+            }, AuthManager.getInstance().getUser().getAcessToken()
         ).execute(Constants.LOGOUT_URL);
     }
 
     private void bindViews() {
+        actionBar = getSupportActionBar();
         bottomNav = findViewById(R.id.bnv_logged_in_navigation);
-    }
-
-    @Override
-    public void onLogoutClicked() {
-        DialogUtil.createOkCancelDialog(this, null, R.string.logout_confirmation,
-            (dialog, which) -> {
-                if (which == AlertDialog.BUTTON_POSITIVE) {
-                    makeLogout();
-                }
-            }).show();
     }
 }

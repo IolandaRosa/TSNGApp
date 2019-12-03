@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DrawableUtil;
 import com.example.tsngapp.model.Elder;
@@ -33,28 +34,7 @@ public class ProfileFragment extends BaseFragment {
     private TextView tvEmail;
     private TextView btnLogout;
 
-    private User user;
-    private Elder elder;
-
     public ProfileFragment() {}
-
-    public static ProfileFragment newInstance(User user, Elder elder) {
-        ProfileFragment fragment = new ProfileFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(PARAM_USER, user);
-        args.putParcelable(PARAM_ELDER, elder);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            this.user = getArguments().getParcelable(PARAM_USER);
-            this.elder = getArguments().getParcelable(PARAM_ELDER);
-        }
-    }
 
     @Override
     protected int getLayoutResourceId() {
@@ -74,7 +54,9 @@ public class ProfileFragment extends BaseFragment {
     }
 
     private void fillProfileInfo() {
+        final User user = AuthManager.getInstance().getUser();
         if (user != null) {
+            final Elder elder = AuthManager.getInstance().getElder();
             if (!elder.getPhotoUrl().isEmpty()) {
                 new DrawableUtil.DownloadImageTask(elder.getPhotoUrl(), bitmap -> {
                     ivProfilePicture.setImageBitmap(bitmap);

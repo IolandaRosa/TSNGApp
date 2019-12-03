@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.annimon.stream.Stream;
 import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
+import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.api.model.SimpleValueSensor;
 import com.example.tsngapp.helpers.Constants;
@@ -53,41 +54,28 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DashboardFragment extends BaseFragment {
-    public static final String PARAM_USER = "PARAM_USER";
-
     private LineChart chartElectricalCurrent, chartTemperature;
     private View currentChartView, temperatureChartView,
             bedStateView, doorStateView, weatherStateView, temperatureStateView;
     private TextView tvStatusAwake, tvStatusInside, tvStatusWeather, tvStatusTemperature;
     private ImageView bedStateIcon, doorStateIcon, weatherStateIcon, temperatureStateIcon;
 
-    private User user;
     private List<Entry> currentChartEntries, temperatureChartEntries;
     private Toast currentTouchToast;
 
     public DashboardFragment() {}
 
-    public static DashboardFragment newInstance(User user) {
-        DashboardFragment fragment = new DashboardFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(PARAM_USER, user);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            this.user = getArguments().getParcelable(PARAM_USER);
-        }
-
         this.currentChartEntries = new LinkedList<>();
         this.temperatureChartEntries = new LinkedList<>();
     }
 
     @Override
-    protected void onCreateViewActions(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected void onCreateViewActions(@NonNull LayoutInflater inflater,
+                                       @Nullable ViewGroup container,
+                                       @Nullable Bundle savedInstanceState) {
         bindViews();
         setupStaticResources();
         loadStatusCards();
@@ -118,10 +106,9 @@ public class DashboardFragment extends BaseFragment {
                     final String data = event.getData();
                     final JSONArray arr = new JSONObject(data).getJSONArray("values");
 
-                    if (arr.get(0).equals(user.getElder_id())) {
+                    if (arr.get(0).equals(AuthManager.getInstance().getUser().getElder_id())) {
                         final SMARTAAL.CurrentLastValues.Data sensorData =
                                 new SMARTAAL.CurrentLastValues.Data(
-                                    null,
                                     arr.getInt(1),
                                     arr.getString(2)
                                 );
@@ -244,16 +231,20 @@ public class DashboardFragment extends BaseFragment {
     }
 
     private void loadStatusCards() {
-        final SMARTAAL.BedState getBedState = new SMARTAAL.BedState(user.getElder_id(),
+        final User user = AuthManager.getInstance().getUser();
+        final SMARTAAL.BedState getBedState = new SMARTAAL.BedState(
+                user.getElder_id(),
                 user.getAcessToken(),
                 state -> updateBedState(state.isAwake()),
                 e -> logStatusCardInitFailure(e, "getBedState"));
-        final SMARTAAL.DoorState getDoorState = new SMARTAAL.DoorState(user.getElder_id(),
+        final SMARTAAL.DoorState getDoorState = new SMARTAAL.DoorState(
+                user.getElder_id(),
                 user.getAcessToken(),
                 state -> updateDoorState(state.isInside()),
                 e -> logStatusCardInitFailure(e, "getDoorState"));
         final SMARTAAL.TemperatureValue getWeatherAndTemperature = new SMARTAAL.TemperatureValue(
-                user.getElder_id(), user.getAcessToken(),
+                user.getElder_id(),
+                user.getAcessToken(),
                 state -> {
                     updateWeatherState(state.getWeather());
                     updateTemperatureState(state.getTemperature());
@@ -267,6 +258,7 @@ public class DashboardFragment extends BaseFragment {
 
     @SuppressLint("SimpleDateFormat")
     private void loadLineChartLastValues() {
+        final User user = AuthManager.getInstance().getUser();
         final SMARTAAL.CurrentLastValues getCurrentLastValues = new SMARTAAL.CurrentLastValues(
                 user.getElder_id(), Constants.CURRENT_CHART_MAX_VALUES, user.getAcessToken(),
                 values -> addLineChartEntries(chartElectricalCurrent, currentChartEntries,

@@ -3,6 +3,9 @@ package com.example.tsngapp.helpers;
 public class Constants {
     public static final String DEBUG_TAG = "DEBUG_TSNGApp";
 
+    public static final int REQUEST_READ_TIMEOUT = 10000;
+    public static final int REQUEST_CONNECT_TIMEOUT = 15000;
+
     //SHARED_PREFS
     public static final String SHARED_PREFS_NAME = "TSNGApp";
     public static final String TOKEN_KEY = "token";

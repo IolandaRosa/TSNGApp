@@ -2,6 +2,7 @@ package com.example.tsngapp.ui.adapter;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.tsngapp.ui.adapter.listener.RecyclerViewItemLongClick;
 import com.example.tsngapp.ui.adapter.listener.RecyclerViewItemShortClick;
 
 import java.util.ArrayList;
@@ -11,11 +12,11 @@ public abstract class BaseRecyclerAdapter<E, V extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<V> {
 
     protected List<E> listData;
-    protected RecyclerViewItemShortClick itemClickListener;
+    protected RecyclerViewItemShortClick itemShortClickListener;
+    protected RecyclerViewItemLongClick itemLongClickListener;
 
-    public BaseRecyclerAdapter(RecyclerViewItemShortClick itemClickListener) {
+    public BaseRecyclerAdapter() {
         this.listData = new ArrayList<>();
-        this.itemClickListener = itemClickListener;
     }
 
     @Override
@@ -29,9 +30,17 @@ public abstract class BaseRecyclerAdapter<E, V extends RecyclerView.ViewHolder>
         notifyItemRangeInserted(previousCount, listData.size());
     }
 
+    public void setItemShortClickListener(RecyclerViewItemShortClick listener) {
+        this.itemShortClickListener = listener;
+    }
+
+    public void setItemShortClickListener(RecyclerViewItemLongClick listener) {
+        this.itemLongClickListener = listener;
+    }
+
     public void addItem(E e) {
         this.listData.add(e);
-        notifyDataSetChanged();
+        notifyItemInserted(listData.size());
     }
 
     public void setList(List<E> es) {
@@ -49,5 +58,6 @@ public abstract class BaseRecyclerAdapter<E, V extends RecyclerView.ViewHolder>
 
     public void clearList() {
         this.listData.clear();
+        notifyDataSetChanged();
     }
 }

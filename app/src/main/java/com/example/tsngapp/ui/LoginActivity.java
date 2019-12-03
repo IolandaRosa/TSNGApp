@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.ErrorCode;
@@ -54,7 +55,6 @@ public class LoginActivity extends AppCompatActivity {
             ErrorValidator.getInstance().showErrorMessage(this, "Please activate your connection to Internet");
             return;
         }
-
 
         this.usernameEditText = findViewById(R.id.registerNameEditText);
         this.passwordEditText = findViewById(R.id.registerUsernameEditText);
@@ -171,7 +171,10 @@ public class LoginActivity extends AppCompatActivity {
             user.setAcessToken(token);
             getElderInfo(user.getId(), token,
                     elder -> {
-                        redirectLoggedIn(user, elder);
+                        AuthManager.getInstance()
+                                .setUser(user)
+                                .setElder(elder);
+                        redirectLoggedIn();
                     },
                     e -> handleLoginFailed("Couldn't get elder, " + e.getMessage())
             );
@@ -203,16 +206,8 @@ public class LoginActivity extends AppCompatActivity {
         new SMARTAAL.ElderInfo(userId, token, resultListener, failureListener).execute();
     }
 
-    private void redirectLoggedIn(User user, Elder elder) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.INTENT_USER_KEY, user);
-        bundle.putParcelable(Constants.INTENT_ELDER_KEY, elder);
-
+    private void redirectLoggedIn() {
         Intent i = new Intent(this, LoggedInActivity.class);
-
-        i.putExtras(bundle);
-
-        //vai para pagina inicial da aplicação
         startActivity(i);
         this.finish();
     }

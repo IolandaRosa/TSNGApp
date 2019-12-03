@@ -64,7 +64,7 @@ public class SMARTAAL {
             public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
                 final String dateString = jsonObject.getString("date");
                 final Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dateString);
-                final String value = jsonObject.getString("temperature");
+                final String value = jsonObject.getString("value");
                 return new Data(!value.equals("L"), date);
             }
         }
@@ -87,21 +87,34 @@ public class SMARTAAL {
         }
     }
 
-    public static class DoorLastValues extends AsyncTaskRequest<JSONObject> {
+    public static class DoorLastValues extends AsyncTaskRequest<List<DoorState.Data>> {
         @SuppressLint("DefaultLocale")
         public DoorLastValues(int elderId, int numOfValues, String token,
-                              OnResultListener<JSONObject> resultListener,
+                              OnResultListener<List<DoorState.Data>> resultListener,
                               OnFailureListener failureListener) {
             super(token, String.format(Constants.DOOR_LAST_VALUES_URL, elderId, numOfValues),
                     resultListener, failureListener);
         }
 
         @Override
-        public AsyncTaskResult<JSONObject> request() throws JSONException {
+        public AsyncTaskResult<List<DoorState.Data>> request() throws JSONException, ParseException {
             HTTPGETRequest request = new HTTPGETRequest(token, url);
             String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            return new AsyncTaskResult<>(jsonResponse);
+
+            if (response.length() > 0) {
+                JSONObject jsonResponse = new JSONObject(response);
+                JSONArray data = jsonResponse.getJSONArray("data");
+
+                List<DoorState.Data> sensorDataList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject obj = data.getJSONObject(i);
+                    DoorState.Data sensorData = DoorState.Data.fromJSON(obj);
+                    sensorDataList.add(sensorData);
+                }
+                return new AsyncTaskResult<>(sensorDataList);
+            }
+
+            return new AsyncTaskResult<>(new LinkedList<>());
         }
     }
 
@@ -204,11 +217,11 @@ public class SMARTAAL {
     public static class InternalTempLastValues extends AsyncTaskRequest<List<InternalTempLastValues.Data>> {
         public static class Data extends SimpleValueSensor {
             public Data(String sensorId, float value, Date date) {
-                super(sensorId, value, date);
+                super(value, date);
             }
 
-            public Data(String sensorId, float value, String strDate) throws ParseException {
-                super(sensorId, value, strDate);
+            public Data(float value, String strDate) throws ParseException {
+                super(value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
@@ -305,11 +318,11 @@ public class SMARTAAL {
     public static class CurrentLastValues extends AsyncTaskRequest<List<CurrentLastValues.Data>> {
         public static class Data extends SimpleValueSensor {
             public Data(String sensorId, float value, Date date) {
-                super(sensorId, value, date);
+                super(value, date);
             }
 
-            public Data(String sensorId, float value, String strDate) throws ParseException {
-                super(sensorId, value, strDate);
+            public Data(float value, String strDate) throws ParseException {
+                super(value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
