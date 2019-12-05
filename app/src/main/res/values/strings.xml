@@ -64,4 +64,5 @@
     <string name="label_entered">Entered</string>
     <string name="label_left">Left</string>
     <string name="label_electrical_current">Electrical current</string>
+    <string name="label_asleep">Asleep</string>
 </resources>

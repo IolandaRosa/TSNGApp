@@ -74,6 +74,11 @@ public class StateFragment extends BaseFragment
             case DOOR:
                 loadFragment(new DoorStateFragment(), item.getTitle());
                 break;
+            case BED:
+                loadFragment(new BedStateFragment(), item.getTitle());
+            case DIVISIONS:
+                loadFragment(new DivisionStateFragment(), item.getTitle());
+                break;
             default:
                 loadFragment(new StateMenuFragment());
         }

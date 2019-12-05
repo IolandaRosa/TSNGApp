@@ -23,6 +23,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class SMARTAAL {
+    private static JSONObject performHttpGetRequest(String token, String url) throws JSONException {
+        HTTPGETRequest request = new HTTPGETRequest(token, url);
+        String response = request.execute();
+        if (response.length() > 0) {
+            return new JSONObject(response);
+        }
+        return null;
+    }
+
     public static class ElderInfo extends AsyncTaskRequest<Elder> {
         @SuppressLint("DefaultLocale")
         public ElderInfo(int userId, String token,
@@ -34,11 +43,12 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<Elder> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            Elder data = Elder.fromJSON(jsonResponse);
-            return new AsyncTaskResult<>(data);
+            final JSONObject response = performHttpGetRequest(token, url);
+            if (response != null) {
+                Elder data = Elder.fromJSON(response);
+                return new AsyncTaskResult<>(data);
+            }
+            return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
 
@@ -79,11 +89,12 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<Data> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            Data data = Data.fromJSON(jsonResponse);
-            return new AsyncTaskResult<>(data);
+            final JSONObject response = performHttpGetRequest(token, url);
+            if (response != null) {
+                Data data = Data.fromJSON(response);
+                return new AsyncTaskResult<>(data);
+            }
+            return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
 
@@ -189,28 +200,40 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<Data> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            Data data = Data.fromJSON(jsonResponse);
-            return new AsyncTaskResult<>(data);
+            final JSONObject response = performHttpGetRequest(token, url);
+            if (response != null) {
+                Data data = Data.fromJSON(response);
+                return new AsyncTaskResult<>(data);
+            }
+            return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
 
-    public static class BedLastValues extends AsyncTaskRequest<String> {
+    public static class BedLastValues extends AsyncTaskRequest<List<BedState.Data>> {
         @SuppressLint("DefaultLocale")
         public BedLastValues(int elderId, int numOfValues, String token,
-                             OnResultListener<String> resultListener,
+                             OnResultListener<List<BedState.Data>> resultListener,
                              OnFailureListener failureListener) {
             super(token, String.format(Constants.BED_LAST_VALUES_URL, elderId, numOfValues),
                     resultListener, failureListener);
         }
 
         @Override
-        public AsyncTaskResult<String> request() {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String result = request.execute();
-            return new AsyncTaskResult<>(result);
+        public AsyncTaskResult<List<BedState.Data>> request() throws JSONException, ParseException {
+            final JSONObject response = performHttpGetRequest(token, url);
+
+            if (response != null) {
+                JSONArray data = response.getJSONArray("data");
+                List<BedState.Data> sensorDataList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject obj = data.getJSONObject(i);
+                    BedState.Data sensorData = BedState.Data.fromJSON(obj);
+                    sensorDataList.add(sensorData);
+                }
+                return new AsyncTaskResult<>(sensorDataList);
+            }
+
+            return new AsyncTaskResult<>(new LinkedList<>());
         }
     }
 
@@ -245,12 +268,10 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<List<Data>> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            if (response.length() > 0) {
-                JSONObject jsonResponse = new JSONObject(response);
-                JSONArray data = jsonResponse.getJSONArray("data");
+            final JSONObject response = performHttpGetRequest(token, url);
 
+            if (response != null) {
+                JSONArray data = response.getJSONArray("data");
                 List<Data> sensorDataList = new ArrayList<>();
                 for (int i = 0; i < data.length(); i++) {
                     JSONObject obj = data.getJSONObject(i);
@@ -307,11 +328,12 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<Data> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            Data data = Data.fromJSON(jsonResponse);
-            return new AsyncTaskResult<>(data);
+            final JSONObject response = performHttpGetRequest(token, url);
+            if (response != null) {
+                Data data = Data.fromJSON(response);
+                return new AsyncTaskResult<>(data);
+            }
+            return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
 
@@ -347,19 +369,80 @@ public class SMARTAAL {
 
         @Override
         public AsyncTaskResult<List<Data>> request() throws JSONException, ParseException {
-            HTTPGETRequest request = new HTTPGETRequest(token, url);
-            String response = request.execute();
-            JSONObject jsonResponse = new JSONObject(response);
-            JSONArray data = jsonResponse.getJSONArray("data");
+            final JSONObject response = performHttpGetRequest(token, url);
 
-            List<Data> sensorDataList = new ArrayList<>();
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject obj = data.getJSONObject(i);
-                Data sensorData = Data.fromJSON(obj);
-                sensorDataList.add(sensorData);
+            if (response != null) {
+                JSONArray data = response.getJSONArray("data");
+                List<Data> sensorDataList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject obj = data.getJSONObject(i);
+                    Data sensorData = Data.fromJSON(obj);
+                    sensorDataList.add(sensorData);
+                }
+
+                return new AsyncTaskResult<>(sensorDataList);
             }
-            
-            return new AsyncTaskResult<>(sensorDataList);
+           return new AsyncTaskResult<>(new LinkedList<>());
+        }
+    }
+
+    public static class DivisionValues extends AsyncTaskRequest<List<DivisionValues.Data>> {
+        public static class Data {
+            private boolean isInside;
+            private String division;
+            private Date date;
+
+            public Data(boolean isInside, String division, Date date) {
+                this.isInside = isInside;
+                this.division = division;
+                this.date = date;
+            }
+
+            public boolean isInside() {
+                return isInside;
+            }
+
+            public String getDivision() {
+                return division;
+            }
+
+            public Date getDate() {
+                return date;
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final String dateString = jsonObject.getString("updated_at");
+                final Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dateString);
+                final boolean isInside = jsonObject.getString("value").equals("left");
+                return new Data(isInside, jsonObject.getString("division"), date);
+            }
+        }
+
+        @SuppressLint("DefaultLocale")
+        public DivisionValues(int elderId, String division, String token,
+                             OnResultListener<List<DivisionValues.Data>> resultListener,
+                             OnFailureListener failureListener) {
+            super(token, String.format(Constants.DIVISION_VALUES_URL, elderId, division),
+                    resultListener, failureListener);
+        }
+
+        @Override
+        public AsyncTaskResult<List<DivisionValues.Data>> request() throws JSONException, ParseException {
+            final JSONObject response = performHttpGetRequest(token, url);
+
+            if (response != null) {
+                JSONArray data = response.getJSONArray("data");
+                List<DivisionValues.Data> sensorDataList = new ArrayList<>();
+                for (int i = 0; i < data.length(); i++) {
+                    JSONObject obj = data.getJSONObject(i);
+                    DivisionValues.Data sensorData = DivisionValues.Data.fromJSON(obj);
+                    sensorDataList.add(sensorData);
+                }
+                return new AsyncTaskResult<>(sensorDataList);
+            }
+
+            return new AsyncTaskResult<>(new LinkedList<>());
         }
     }
 }

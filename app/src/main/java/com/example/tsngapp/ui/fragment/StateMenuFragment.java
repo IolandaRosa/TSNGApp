@@ -3,6 +3,7 @@ package com.example.tsngapp.ui.fragment;
 
 import android.os.Bundle;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -20,8 +21,36 @@ import com.example.tsngapp.ui.view.StateMenuItem;
  * Fragment to hold menu of the house state fragment
  */
 public class StateMenuFragment extends BaseFragment {
+    public enum MenuItem {
+        CURRENT (R.id.menu_item_current, R.string.label_current_state),
+        BED (R.id.menu_item_bed, R.string.label_bed_state),
+        DOOR (R.id.menu_item_door, R.string.label_door_state),
+        CAMERA (R.id.menu_item_camera, R.string.label_camera_state),
+        DIVISIONS (R.id.menu_item_divisions, R.string.label_division_state),
+        INTERNAL_TEMP (R.id.menu_item_internal_temp, R.string.label_internal_temp_state),
+        WINDOWS (R.id.menu_item_windows, R.string.label_window_state),
+        LIGHTS (R.id.menu_item_lights, R.string.label_lights_state),
+        SOS (R.id.menu_item_sos, R.string.label_sos_state);
+
+        private @IdRes int itemViewId;
+        private @StringRes int title;
+
+        MenuItem(@IdRes int itemViewId, @StringRes int title) {
+            this.itemViewId = itemViewId;
+            this.title = title;
+        }
+
+        public int getItemViewId() {
+            return itemViewId;
+        }
+
+        public int getTitle() {
+            return title;
+        }
+    }
+
     /**
-     * Listened specific to this fragment (defined on the bottom)
+     * Listener specific to this fragment (defined on the bottom)
      */
     private FragmentActionListener actionListener;
 
@@ -48,39 +77,14 @@ public class StateMenuFragment extends BaseFragment {
     }
 
     private void setupMenuActions() {
-        rootView.findViewById(R.id.menu_item_current)
-                .setOnClickListener(v -> actionListener.onMenuItemClicked(MenuItem.CURRENT));
-        rootView.findViewById(R.id.menu_item_bed);
-        rootView.findViewById(R.id.menu_item_door)
-                .setOnClickListener(v -> actionListener.onMenuItemClicked(MenuItem.DOOR));
-        rootView.findViewById(R.id.menu_item_camera);
-        rootView.findViewById(R.id.menu_item_divisions);
-        rootView.findViewById(R.id.menu_item_internal_temp);
-        rootView.findViewById(R.id.menu_item_windows);
-        rootView.findViewById(R.id.menu_item_lights);
-        rootView.findViewById(R.id.menu_item_sos);
+        for (MenuItem item : MenuItem.values()) {
+            setupMenuItem(item);
+        }
     }
 
-    public enum MenuItem {
-        CURRENT(R.string.label_current_state),
-        BED(R.string.label_bed_state),
-        DOOR(R.string.label_door_state),
-        CAMERA(R.string.label_camera_state),
-        DIVISIONS(R.string.label_division_state),
-        INTERNAL_TEMP(R.string.label_internal_temp_state),
-        WINDOWS(R.string.label_window_state),
-        LIGHTS(R.string.label_lights_state),
-        SOS(R.string.label_sos_state);
-
-        private @StringRes int title;
-
-        MenuItem(int title) {
-            this.title = title;
-        }
-
-        public int getTitle() {
-            return title;
-        }
+    private void setupMenuItem(MenuItem item) {
+        rootView.findViewById(item.getItemViewId())
+                .setOnClickListener(v -> actionListener.onMenuItemClicked(item));
     }
 
     public interface FragmentActionListener {

@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tsngapp.R;
 
+/**
+ * This class is used to remove the last divider on a recycler view
+ */
 public class SimpleHorizontalDividerItemDecoration extends RecyclerView.ItemDecoration {
     private Drawable divider;
 
@@ -27,6 +30,9 @@ public class SimpleHorizontalDividerItemDecoration extends RecyclerView.ItemDeco
             if (i == (childCount - 1)) continue;
 
             View child = parent.getChildAt(i);
+            if (child == null) {
+                return;
+            }
             RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
 
             final int top = child.getBottom() + params.bottomMargin;

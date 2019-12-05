@@ -14,8 +14,8 @@ import com.example.tsngapp.api.SMARTAAL;
 
 import java.text.SimpleDateFormat;
 
-public class DoorStateRecyclerAdapter extends
-        BaseRecyclerAdapter<SMARTAAL.DoorState.Data, DoorStateRecyclerAdapter.ViewHolder> {
+public class BedStateRecyclerAdapter extends
+        BaseRecyclerAdapter<SMARTAAL.BedState.Data, BedStateRecyclerAdapter.ViewHolder> {
 
     @Override
     protected int getItemLayoutResource() {
@@ -29,15 +29,15 @@ public class DoorStateRecyclerAdapter extends
 
     @Override
     @SuppressLint("SimpleDateFormat")
-    protected void setViewData(@NonNull ViewHolder view, SMARTAAL.DoorState.Data data) {
-        if (data.isInside()) {
-            view.tvAction.setText(R.string.label_entered);
-            view.ivIcon.setImageResource(R.drawable.ic_mdi_door_closed_black_24dp);
+    protected void setViewData(@NonNull ViewHolder view, SMARTAAL.BedState.Data data) {
+        if (data.isAwake()) {
+            view.tvAction.setText(R.string.label_awake);
+            view.ivIcon.setImageResource(R.drawable.ic_mdi_bed_empty_black_24dp);
             view.ivIcon.setColorFilter(ContextCompat.getColor(view.ivIcon.getContext(),
                     R.color.md_teal_500), android.graphics.PorterDuff.Mode.SRC_IN);
         } else {
-            view.tvAction.setText(R.string.label_left);
-            view.ivIcon.setImageResource(R.drawable.ic_mdi_door_open_black_24dp);
+            view.tvAction.setText(R.string.label_asleep);
+            view.ivIcon.setImageResource(R.drawable.ic_hotel_black_24dp);
             view.ivIcon.setColorFilter(ContextCompat.getColor(view.ivIcon.getContext(),
                     R.color.md_red_500), android.graphics.PorterDuff.Mode.SRC_IN);
         }

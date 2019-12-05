@@ -35,6 +35,9 @@ public class Constants {
     public static final String INTERNAL_TEMP_LAST_VALUES_URL = BASE_API_URL + "internaltemp/%d/lastValues/%d";
     public static final String ELECTRICAL_CURRENT_LAST_VALUES_URL = BASE_API_URL + "current/%d/lastValues/%d";
 
+    // arguments: elderid, division (all, bedroom, kitchen, bathroom, attic & livingroom)
+    public static final String DIVISION_VALUES_URL = BASE_API_URL + "division/%d/division/%s/all";
+
     public static final Integer CURRENT_CHART_MAX_VALUES = 5;
     public static final Integer TEMPERATURE_CHART_MAX_VALUES = 5;
 
