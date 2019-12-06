@@ -76,6 +76,7 @@ public class StateFragment extends BaseFragment
                 break;
             case BED:
                 loadFragment(new BedStateFragment(), item.getTitle());
+                break;
             case DIVISIONS:
                 loadFragment(new DivisionStateFragment(), item.getTitle());
                 break;
