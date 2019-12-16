@@ -80,6 +80,15 @@ public class StateFragment extends BaseFragment
             case DIVISIONS:
                 loadFragment(new DivisionStateFragment(), item.getTitle());
                 break;
+            case WINDOWS:
+                loadFragment(new WindowStateFragment(), item.getTitle());
+                break;
+            case LIGHTS:
+                loadFragment(new LightStateFragment(), item.getTitle());
+                break;
+            case SOS:
+                loadFragment(new SOSStateFragment(), item.getTitle());
+                break;
             default:
                 loadFragment(new StateMenuFragment());
         }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.AuthManager;
@@ -23,6 +24,7 @@ public class DoorStateFragment extends BaseNestedFragment {
 
     private RecyclerView rvStateList;
     private DoorStateRecyclerAdapter listAdapter;
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreateViewPostActions(@NonNull LayoutInflater inflater,
@@ -42,9 +44,15 @@ public class DoorStateFragment extends BaseNestedFragment {
     }
 
     private void loadListData() {
+        refreshLayout.setRefreshing(true);
         new SMARTAAL.DoorLastValues(AuthManager.getInstance().getElder().getId(), NUM_OF_VALUES,
-                AuthManager.getInstance().getUser().getAcessToken(), r -> listAdapter.setList(r),
-                e -> Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show()
+            AuthManager.getInstance().getUser().getAcessToken(), r -> {
+                listAdapter.setList(r);
+                refreshLayout.setRefreshing(false);
+            }, e -> {
+                Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                refreshLayout.setRefreshing(false);
+            }
         ).execute();
     }
 
@@ -59,6 +67,8 @@ public class DoorStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
+        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_door_state);
     }
 }

@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.AuthManager;
@@ -22,6 +23,7 @@ import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecor
 public class DivisionStateFragment extends BaseNestedFragment {
     private RecyclerView rvStateList;
     private DivisionStateRecyclerAdapter listAdapter;
+    private SwipeRefreshLayout refreshLayout;
 
     @Override
     protected void onCreateViewPostActions(@NonNull LayoutInflater inflater,
@@ -41,9 +43,16 @@ public class DivisionStateFragment extends BaseNestedFragment {
     }
 
     private void loadListData() {
+        refreshLayout.setRefreshing(true);
         new SMARTAAL.DivisionValues(AuthManager.getInstance().getElder().getId(), "all",
-                AuthManager.getInstance().getUser().getAcessToken(), r -> listAdapter.setList(r),
-                e -> Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show()
+            AuthManager.getInstance().getUser().getAcessToken(), r -> {
+                listAdapter.setList(r);
+                refreshLayout.setRefreshing(false);
+            },
+            e -> {
+                Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                refreshLayout.setRefreshing(false);
+            }
         ).execute();
     }
 
@@ -55,11 +64,12 @@ public class DivisionStateFragment extends BaseNestedFragment {
 
         final SimpleHorizontalDividerItemDecoration dividerItemDecoration =
                 new SimpleHorizontalDividerItemDecoration(rvStateList.getContext());
-//        rvStateList.addItemDecoration(new DividerItemDecoration(rvStateList.getContext(), lm.getOrientation()));
         rvStateList.addItemDecoration(dividerItemDecoration);
     }
 
     private void bindViews() {
+        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_division_state);
     }
 }

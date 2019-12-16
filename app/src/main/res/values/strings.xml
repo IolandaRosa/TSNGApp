@@ -54,7 +54,6 @@
     <string name="label_bed_state">Bed state</string>
     <string name="label_current_state">Electrical current state</string>
     <string name="label_door_state">Outside door</string>
-    <string name="label_camera_state">Camera registries</string>
     <string name="label_division_state">House division state</string>
     <string name="label_internal_temp_state">Internal temperature</string>
     <string name="label_window_state">House windows</string>
@@ -65,4 +64,8 @@
     <string name="label_left">Left</string>
     <string name="label_electrical_current">Electrical current</string>
     <string name="label_asleep">Asleep</string>
+    <string name="label_closed">Closed</string>
+    <string name="label_open">Open</string>
+    <string name="label_on">On</string>
+    <string name="label_off">Off</string>
 </resources>

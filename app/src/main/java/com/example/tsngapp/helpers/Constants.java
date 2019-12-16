@@ -26,11 +26,17 @@ public class Constants {
     public static final String DOOR_STATE_URL = BASE_API_URL + "door/%d/last";
     public static final String BED_STATE_URL = BASE_API_URL + "bed/%d/last";
     public static final String TEMPERATURE_VALUE_URL = BASE_API_URL + "temperature/%d/last";
+    public static final String SOS_VALUE_URL = BASE_API_URL + "sos/%d/all";
 
     // last values format order: elderid, number of values
     public static final String DOOR_LAST_VALUES_URL = BASE_API_URL + "door/%d/lastValues/%d";
     public static final String LIGHT_LAST_VALUES_URL = BASE_API_URL + "light/%d/lastValues/%d";
     public static final String WINDOW_LAST_VALUES_URL = BASE_API_URL + "window/%d/lastValues/%d";
+
+    // division last values arguments: elderid, division (all, bedroom, kitchen, bathroom, attic & livingroom)
+    public static final String WINDOW_DIVISION_VALUES_URL = BASE_API_URL + "window/%d/division/%s/all";
+    public static final String LIGHT_DIVISION_LAST_VALUES_URL = BASE_API_URL + "light/%d/division/%s/all";
+
     public static final String BED_LAST_VALUES_URL = BASE_API_URL + "bed/%d/lastValues/%d";
     public static final String INTERNAL_TEMP_LAST_VALUES_URL = BASE_API_URL + "internaltemp/%d/lastValues/%d";
     public static final String ELECTRICAL_CURRENT_LAST_VALUES_URL = BASE_API_URL + "current/%d/lastValues/%d";
@@ -38,8 +44,8 @@ public class Constants {
     // arguments: elderid, division (all, bedroom, kitchen, bathroom, attic & livingroom)
     public static final String DIVISION_VALUES_URL = BASE_API_URL + "division/%d/division/%s/all";
 
-    public static final Integer CURRENT_CHART_MAX_VALUES = 5;
-    public static final Integer TEMPERATURE_CHART_MAX_VALUES = 5;
+    public static final Integer CURRENT_CHART_MAX_VALUES = 3;
+    public static final Integer TEMPERATURE_CHART_MAX_VALUES = 3;
 
     //Activities
     public static final int REGISTER_ACTIVITY_CODE = 1;
