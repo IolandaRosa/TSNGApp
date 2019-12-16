@@ -68,4 +68,13 @@
     <string name="label_open">Open</string>
     <string name="label_on">On</string>
     <string name="label_off">Off</string>
+    <string name="label_showing_results_for">Showing results for:</string>
+    <string-array name="array_divisions">
+        <item>All</item>
+        <item>Bedroom</item>
+        <item>Kitchen</item>
+        <item>Bathroom</item>
+        <item>Attic</item>
+        <item>Living Room</item>
+    </string-array>
 </resources>
