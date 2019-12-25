@@ -3,7 +3,10 @@ package com.example.tsngapp.ui.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,8 +45,12 @@ public class WindowStateFragment extends BaseNestedFragment {
     }
 
     private void loadListData() {
+        this.loadListData("all");
+    }
+
+    private void loadListData(String division) {
         refreshLayout.setRefreshing(true);
-        new SMARTAAL.WindowLastValues(AuthManager.getInstance().getElder().getId(), "all",
+        new SMARTAAL.WindowLastValues(AuthManager.getInstance().getElder().getId(), division,
             AuthManager.getInstance().getUser().getAcessToken(), r -> {
                 listAdapter.setList(r);
                 refreshLayout.setRefreshing(false);
@@ -70,6 +77,18 @@ public class WindowStateFragment extends BaseNestedFragment {
         refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_window_state);
+        ((Spinner) rootView.findViewById(R.id.sp_divisions))
+                .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                        String[] divisions = getResources().getStringArray(R.array.array_divisions);
+                        final String division = divisions[position].toLowerCase();
+                        loadListData(division);
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parent) {}
+                });
     }
 }
 

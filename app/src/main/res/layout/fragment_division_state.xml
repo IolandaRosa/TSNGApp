@@ -27,7 +27,6 @@
             android:padding="8dp">
 
             <TextView
-                android:id="@+id/textView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_showing_results_for"
