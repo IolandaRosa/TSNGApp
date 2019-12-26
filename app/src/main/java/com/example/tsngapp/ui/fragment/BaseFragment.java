@@ -25,6 +25,14 @@ public abstract class BaseFragment extends Fragment {
     }
 
     /**
+     * Could handle back press.
+     * @return true if back press was handled
+     */
+    public boolean onBackPressed() {
+        return false;
+    }
+
+    /**
      * Actions that would be called on the onCreateView lifecycle event
      * @param inflater
      * @param container

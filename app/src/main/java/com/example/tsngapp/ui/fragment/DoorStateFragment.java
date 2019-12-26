@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -67,7 +66,7 @@ public class DoorStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
-        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout = rootView.findViewById(R.id.srl);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_door_state);
     }

@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,14 +55,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DashboardFragment extends BaseFragment {
+    private final Integer TOTAL_REQUEST_COUNT = 5;
+
     private LineChart chartElectricalCurrent, chartTemperature;
     private View currentChartView, temperatureChartView,
             bedStateView, doorStateView, weatherStateView, temperatureStateView;
     private TextView tvStatusAwake, tvStatusInside, tvStatusWeather, tvStatusTemperature;
     private ImageView bedStateIcon, doorStateIcon, weatherStateIcon, temperatureStateIcon;
+    private SwipeRefreshLayout refreshLayout;
 
     private List<Entry> currentChartEntries, temperatureChartEntries;
     private Toast currentTouchToast;
+    private Integer requestCount;
+
 
     public DashboardFragment() {}
 
@@ -78,9 +84,8 @@ public class DashboardFragment extends BaseFragment {
                                        @Nullable Bundle savedInstanceState) {
         bindViews();
         setupStaticResources();
-        loadStatusCards();
         initializeCharts();
-        loadLineChartLastValues();
+        loadStatusCardsAndCharts();
         bindSockets();
     }
 
@@ -139,12 +144,6 @@ public class DashboardFragment extends BaseFragment {
             .bind(Constants.Pusher.EVENT_NEW_DOOR_VALUE, subscriptionEventListener);
 
         pusher.connect();
-    }
-
-    private void logStatusCardInitFailure(Exception e, String actionName) {
-        Log.d(Constants.DEBUG_TAG, String.format(
-                "Couldn't initialize dashboard status card (%s), there may be no data available: %s",
-                actionName, e.getMessage()));
     }
 
     private void updateBedState(boolean isAwake) {
@@ -230,46 +229,93 @@ public class DashboardFragment extends BaseFragment {
                 ContextCompat.getColor(rootView.getContext(), temperatureColor));
     }
 
+    private void loadStatusCardsAndCharts() {
+        this.requestCount = 0;
+        setRefreshLayoutState(true);
+        loadStatusCards();
+        loadLineChartLastValues();
+    }
+
+    private void handleStatusCardDataLoadingSuccessful() {
+        // TODO: Concurrency problems?
+        if (++requestCount >= TOTAL_REQUEST_COUNT) {
+            setRefreshLayoutState(false);
+        }
+    }
+
+    private void handleStatusCardDataLoadingFailure(Exception e, String actionName) {
+        Log.d(Constants.DEBUG_TAG, String.format(
+                "Couldn't initialize dashboard status card (%s), there may be no data available: %s",
+                actionName, e.getMessage()));
+        if (requestCount >= TOTAL_REQUEST_COUNT) {
+            setRefreshLayoutState(false);
+        }
+    }
+
     private void loadStatusCards() {
         final User user = AuthManager.getInstance().getUser();
         final SMARTAAL.BedState getBedState = new SMARTAAL.BedState(
                 user.getElder_id(),
                 user.getAcessToken(),
-                state -> updateBedState(state.isAwake()),
-                e -> logStatusCardInitFailure(e, "getBedState"));
+                state -> {
+                    updateBedState(state.isAwake());
+                    handleStatusCardDataLoadingSuccessful();
+                },
+                e -> handleStatusCardDataLoadingFailure(e, "getBedState"));
         final SMARTAAL.DoorState getDoorState = new SMARTAAL.DoorState(
                 user.getElder_id(),
                 user.getAcessToken(),
-                state -> updateDoorState(state.isInside()),
-                e -> logStatusCardInitFailure(e, "getDoorState"));
+                state -> {
+                    updateDoorState(state.isInside());
+                    handleStatusCardDataLoadingSuccessful();
+                },
+                e -> handleStatusCardDataLoadingFailure(e, "getDoorState"));
         final SMARTAAL.TemperatureValue getWeatherAndTemperature = new SMARTAAL.TemperatureValue(
                 user.getElder_id(),
                 user.getAcessToken(),
                 state -> {
                     updateWeatherState(state.getWeather());
                     updateTemperatureState(state.getTemperature());
+                    handleStatusCardDataLoadingSuccessful();
                 },
-                e -> logStatusCardInitFailure(e, "getWeatherAndTemperature"));
+                e -> handleStatusCardDataLoadingFailure(e, "getWeatherAndTemperature"));
 
         getBedState.execute();
         getDoorState.execute();
         getWeatherAndTemperature.execute();
     }
 
+    private <V extends SimpleValueSensor> void handleChartDataLoadingSuccessful(
+            LineChart chart, List<V> values, List<Entry> currentChartEntries, Integer maxValues) {
+        addLineChartEntries(chart, currentChartEntries, maxValues, values);
+        // TODO: Concurrency problems?
+        if (++requestCount >= TOTAL_REQUEST_COUNT) {
+            setRefreshLayoutState(false);
+        }
+    }
+
+    private void handleChartDataLoadingFailed(Exception e) {
+        Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        if (requestCount >= TOTAL_REQUEST_COUNT) {
+            setRefreshLayoutState(false);
+        }
+    }
+
     @SuppressLint("SimpleDateFormat")
     private void loadLineChartLastValues() {
         final User user = AuthManager.getInstance().getUser();
+
         final SMARTAAL.CurrentLastValues getCurrentLastValues = new SMARTAAL.CurrentLastValues(
                 user.getElder_id(), Constants.CURRENT_CHART_MAX_VALUES, user.getAcessToken(),
-                values -> addLineChartEntries(chartElectricalCurrent, currentChartEntries,
-                        Constants.CURRENT_CHART_MAX_VALUES, values),
-                e -> Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_LONG).show()
+                values -> handleChartDataLoadingSuccessful(chartElectricalCurrent, values,
+                        currentChartEntries, Constants.CURRENT_CHART_MAX_VALUES),
+                this::handleChartDataLoadingFailed
         );
         final SMARTAAL.InternalTempLastValues getTemperatureLastValues = new SMARTAAL.InternalTempLastValues(
                 user.getElder_id(), Constants.TEMPERATURE_CHART_MAX_VALUES, user.getAcessToken(),
-                values -> addLineChartEntries(chartTemperature, temperatureChartEntries,
-                        Constants.TEMPERATURE_CHART_MAX_VALUES, values),
-                e -> Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_LONG).show()
+                values -> handleChartDataLoadingSuccessful(chartTemperature, values,
+                        temperatureChartEntries, Constants.TEMPERATURE_CHART_MAX_VALUES),
+                this::handleChartDataLoadingFailed
         );
 
         getCurrentLastValues.execute();
@@ -468,5 +514,15 @@ public class DashboardFragment extends BaseFragment {
         doorStateIcon = doorStateView.findViewById(R.id.iv_card_icon_home_status);
         weatherStateIcon = weatherStateView.findViewById(R.id.iv_card_icon_home_status);
         temperatureStateIcon = temperatureStateView.findViewById(R.id.iv_card_icon_home_status);
+
+        refreshLayout = rootView.findViewById(R.id.srl);
+        refreshLayout.setOnRefreshListener(this::loadStatusCardsAndCharts);
+    }
+
+    private void setRefreshLayoutState(boolean state) {
+        refreshLayout.setRefreshing(state);
+        if (!state) {
+            requestCount = 0;
+        }
     }
 }

@@ -1,20 +1,16 @@
 package com.example.tsngapp.ui.fragment;
 
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -22,7 +18,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
-import com.example.tsngapp.ui.adapter.BedStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.DivisionStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
@@ -78,7 +73,7 @@ public class DivisionStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
-        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout = rootView.findViewById(R.id.srl);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_division_state);
         ((Spinner) rootView.findViewById(R.id.sp_divisions))

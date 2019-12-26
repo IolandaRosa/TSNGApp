@@ -72,7 +72,7 @@ public class LightStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
-        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout = rootView.findViewById(R.id.srl);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_light_state);
         ((Spinner) rootView.findViewById(R.id.sp_divisions))

@@ -44,7 +44,7 @@ public class Constants {
     // arguments: elderid, division (all, bedroom, kitchen, bathroom, attic & livingroom)
     public static final String DIVISION_VALUES_URL = BASE_API_URL + "division/%d/division/%s/all";
 
-    public static final Integer CURRENT_CHART_MAX_VALUES = 3;
+    public static final Integer CURRENT_CHART_MAX_VALUES = 4;
     public static final Integer TEMPERATURE_CHART_MAX_VALUES = 3;
 
     //Activities

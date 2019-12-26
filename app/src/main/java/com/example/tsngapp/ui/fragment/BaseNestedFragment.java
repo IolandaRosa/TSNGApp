@@ -34,6 +34,12 @@ public abstract class BaseNestedFragment<L extends StateMenuFragmentActionListen
         }
     }
 
+    @Override
+    public boolean onBackPressed() {
+        parentListener.onBackToMenuPressed();
+        return true;
+    }
+
     /**
      * Actions that would be called on the onCreateView lifecycle event
      * @param inflater

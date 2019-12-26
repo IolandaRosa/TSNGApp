@@ -22,6 +22,8 @@ import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.ui.fragment.listener.StateMenuFragmentActionListener;
 
+import java.util.List;
+
 /**
  * Fragment for the house and elder detailed state
  */
@@ -95,6 +97,23 @@ public class StateFragment extends BaseFragment
     }
 
     @Override
+    public boolean onBackPressed() {
+        final List<Fragment> fragments = fragmentManager.getFragments();
+
+        boolean handled = false;
+        for (Fragment f : fragments) {
+            if (f instanceof BaseFragment) {
+                handled = ((BaseFragment) f).onBackPressed();
+                if (handled) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    @Override
     public void onBackToMenuPressed() {
         loadFragment(new StateMenuFragment());
     }
@@ -103,4 +122,6 @@ public class StateFragment extends BaseFragment
     public void setTitleFromFragment(Integer title) {
         actionListener.setTitleFromFragment(title);
     }
+
+
 }

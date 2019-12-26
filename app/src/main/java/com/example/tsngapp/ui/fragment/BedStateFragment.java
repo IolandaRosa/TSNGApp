@@ -16,7 +16,6 @@ import com.example.tsngapp.R;
 import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.BedStateRecyclerAdapter;
-import com.example.tsngapp.ui.adapter.DoorStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
 public class BedStateFragment extends BaseNestedFragment {
@@ -68,7 +67,7 @@ public class BedStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
-        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout = rootView.findViewById(R.id.srl);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_bed_state);
     }

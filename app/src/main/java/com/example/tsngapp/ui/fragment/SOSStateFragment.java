@@ -16,7 +16,6 @@ import com.example.tsngapp.R;
 import com.example.tsngapp.api.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.SOSStateRecyclerAdapter;
-import com.example.tsngapp.ui.adapter.WindowStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
 public class SOSStateFragment extends BaseNestedFragment {
@@ -67,7 +66,7 @@ public class SOSStateFragment extends BaseNestedFragment {
     }
 
     private void bindViews() {
-        refreshLayout = rootView.findViewById(R.id.srl_fragment_state);
+        refreshLayout = rootView.findViewById(R.id.srl);
         refreshLayout.setOnRefreshListener(this::loadListData);
         rvStateList = rootView.findViewById(R.id.rv_sos_state);
     }
