@@ -15,12 +15,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.LightStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
-public class LightStateFragment extends BaseNestedFragment {
+public class LightStateFragment extends BaseStateMenuItemFragment {
     private RecyclerView rvStateList;
     private LightStateRecyclerAdapter listAdapter;
     private SwipeRefreshLayout refreshLayout;

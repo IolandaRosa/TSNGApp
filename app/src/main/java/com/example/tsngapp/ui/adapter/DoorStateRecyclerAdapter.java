@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.SMARTAAL;
+import com.example.tsngapp.helpers.DateUtil;
 
 import java.text.SimpleDateFormat;
 
@@ -42,8 +43,7 @@ public class DoorStateRecyclerAdapter extends
                     R.color.md_red_500), android.graphics.PorterDuff.Mode.SRC_IN);
         }
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-        String formattedDate = dateFormat.format(data.getUpdatedAt());
+        String formattedDate = DateUtil.getStringFromDate(data.getUpdatedAt());
         view.tvDate.setText(formattedDate);
     }
 

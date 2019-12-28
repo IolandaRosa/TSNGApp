@@ -10,9 +10,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.ui.fragment.listener.StateMenuFragmentActionListener;
 
-public class ElectricalCurrentStateFragment extends BaseNestedFragment {
+public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
 
     @Override
     protected void onCreateViewPostActions(@NonNull LayoutInflater inflater,

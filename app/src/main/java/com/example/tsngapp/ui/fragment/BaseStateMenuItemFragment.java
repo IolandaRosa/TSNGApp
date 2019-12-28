@@ -10,7 +10,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.tsngapp.ui.fragment.listener.StateMenuFragmentActionListener;
 
-public abstract class BaseNestedFragment<L extends StateMenuFragmentActionListener> extends BaseFragment {
+public abstract class BaseStateMenuItemFragment<L extends StateMenuFragmentActionListener> extends BaseFragment {
     protected L parentListener;
 
     @Override
@@ -34,6 +34,10 @@ public abstract class BaseNestedFragment<L extends StateMenuFragmentActionListen
         }
     }
 
+    /**
+     * Goes back to the StateMenuFragment on the StateFragment
+     * @return true if back press was handled
+     */
     @Override
     public boolean onBackPressed() {
         parentListener.onBackToMenuPressed();

@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.helpers.DateUtil;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +31,7 @@ public class SOSStateRecyclerAdapter extends
     @Override
     @SuppressLint("SimpleDateFormat")
     protected void setViewData(@NonNull ViewHolder view, Date date) {
-        final String dateStr = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(date);
+        final String dateStr = DateUtil.getStringFromDate(date);
         view.tvLabel.setText(dateStr);
         view.ivIcon.setImageResource(R.drawable.ic_alert_sign_black_24dp);
         view.ivIcon.setColorFilter(ContextCompat.getColor(view.ivIcon.getContext(),

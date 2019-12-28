@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.SOSStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
-public class SOSStateFragment extends BaseNestedFragment {
+public class SOSStateFragment extends BaseStateMenuItemFragment {
     private RecyclerView rvStateList;
     private SOSStateRecyclerAdapter listAdapter;
     private SwipeRefreshLayout refreshLayout;

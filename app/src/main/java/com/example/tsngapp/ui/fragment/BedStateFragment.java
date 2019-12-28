@@ -13,12 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.BedStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
 
-public class BedStateFragment extends BaseNestedFragment {
+public class BedStateFragment extends BaseStateMenuItemFragment {
     public static final int NUM_OF_VALUES = 10;
 
     private RecyclerView rvStateList;

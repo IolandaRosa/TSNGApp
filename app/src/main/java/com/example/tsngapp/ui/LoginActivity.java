@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.ErrorCode;

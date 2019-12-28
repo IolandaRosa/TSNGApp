@@ -14,7 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
@@ -25,6 +25,8 @@ import com.example.tsngapp.ui.fragment.StateFragment;
 import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.io.File;
 
 public class LoggedInActivity extends AppCompatActivity implements
         ProfileFragment.ProfileFragmentActionListener,
@@ -38,11 +40,6 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     private ActionBar actionBar;
     private FragmentManager fragmentManager;
-
-    /**
-     * Auxiliary variable to save the action bar subtitle when changing fragments
-     */
-    private @StringRes Integer currentSubtitleStringRes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +56,12 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-        /* Loops through all the fragments on the manager and execute their back press
+        /* Loops through all active fragments on the manager and execute their back press
         * handler, only after that it performs it's own back press actions */
         boolean handled = false;
         for (Fragment f : fragmentManager.getFragments()) {
             if (f instanceof BaseFragment) {
-                handled = ((BaseFragment) f).onBackPressed();
-                if (handled) {
+                if (handled = ((BaseFragment) f).onBackPressed()) {
                     break;
                 }
             }
@@ -95,29 +91,15 @@ public class LoggedInActivity extends AppCompatActivity implements
      */
     @Override
     public void setTitleFromFragment(@StringRes Integer title) {
+        /* The setSubtitle method doesn't accept a null Integer, only a null to clear the title */
         if (title != null) {
             actionBar.setSubtitle(title);
         } else {
             actionBar.setSubtitle(null);
         }
-        currentSubtitleStringRes = title;
-    }
-
-    private void changeTitleAndNavigationFromTag(String className) {
-        if (className != null && className.equals(ProfileFragment.class.getName())) {
-            bottomNav.getMenu().getItem(PROFILE_MENU_ITEM_POSITION).setChecked(true);
-            actionBar.setTitle(R.string.label_profile);
-        } else if (className != null && className.equals(StateFragment.class.getName())) {
-            bottomNav.getMenu().getItem(STATE_MENU_ITEM_POSITION).setChecked(true);
-            actionBar.setTitle(R.string.label_house_state);
-        } else {
-            bottomNav.getMenu().getItem(DASHBOARD_MENU_ITEM_POSITION).setChecked(true);
-            actionBar.setTitle(R.string.label_home);
-        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
-
         switch (item.getItemId()) {
             case R.id.navigation_home:
                 DashboardFragment df = new DashboardFragment();
@@ -135,6 +117,19 @@ public class LoggedInActivity extends AppCompatActivity implements
         }
         return false;
     };
+
+    private void changeTitleAndNavigationFromTag(String className) {
+        if (className != null && className.equals(ProfileFragment.class.getName())) {
+            bottomNav.getMenu().getItem(PROFILE_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_profile);
+        } else if (className != null && className.equals(StateFragment.class.getName())) {
+            bottomNav.getMenu().getItem(STATE_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_house_state);
+        } else {
+            bottomNav.getMenu().getItem(DASHBOARD_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_home);
+        }
+    }
 
     /**
      * Performs back press actions, giving priority to fragment's back stack popping, in order
@@ -165,11 +160,7 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     private void loadFragment(String title, Fragment fragment, boolean addToBackStack) {
         actionBar.setTitle(title);
-//        if (currentSubtitleStringRes != null && fragment instanceof StateFragment) {
-//            actionBar.setSubtitle(currentSubtitleStringRes);
-//        } else {
-//            actionBar.setSubtitle(null);
-//        }
+
         final String tag = fragment.getClass().getName();
         if (isCurrentFragment(tag)) {
             return;
@@ -193,6 +184,7 @@ public class LoggedInActivity extends AppCompatActivity implements
                     AuthManager.getInstance().setUser(null);
                     LoginManager.getInstance().removeFromSharedPreference(this);
 
+                    new File(getFilesDir().getPath() + Constants.STORAGE_DASHBOARD_FILENAME).delete();
                     startActivity(new Intent(this, LoginActivity.class));
                     this.finish();
                 } else {

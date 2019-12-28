@@ -69,6 +69,11 @@
     <string name="label_on">On</string>
     <string name="label_off">Off</string>
     <string name="label_showing_results_for">Showing results for:</string>
+    <string name="label_username">Username</string>
+    <string name="label_email">Email</string>
+    <string name="profile_account_info_title">Account information</string>
+    <string name="label_name">Name</string>
+    <string name="undefined_gender">Undefined gender</string>
     <string-array name="array_divisions">
         <item>All</item>
         <item>Bedroom</item>

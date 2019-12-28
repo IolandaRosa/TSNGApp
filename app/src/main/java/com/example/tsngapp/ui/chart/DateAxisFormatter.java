@@ -2,6 +2,8 @@ package com.example.tsngapp.ui.chart;
 
 import android.annotation.SuppressLint;
 
+import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DateUtil;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.formatter.IValueFormatter;
@@ -21,12 +23,11 @@ public class DateAxisFormatter extends ValueFormatter {
         Date date = new Date();
         try {
             String strDate = String.valueOf(value);
-            SimpleDateFormat formattedDate = new SimpleDateFormat("HHmmss");
-            date = formattedDate.parse(strDate);
+            date = DateUtil.getDateFromString(strDate, "HHmmss");
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return new SimpleDateFormat("HH:mm:ss").format(date);
+        return DateUtil.getStringFromDate(date, Constants.TIME_FORMAT);
     }
 }

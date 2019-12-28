@@ -1,6 +1,7 @@
 package com.example.tsngapp.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.ColorRes;
@@ -24,10 +25,12 @@ import android.widget.Toast;
 import com.annimon.stream.Stream;
 import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
-import com.example.tsngapp.api.AuthManager;
+import com.example.tsngapp.helpers.AuthManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.api.model.SimpleValueSensor;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DateUtil;
+import com.example.tsngapp.model.DashboardData;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.chart.DateAxisFormatter;
 import com.github.mikephil.charting.charts.LineChart;
@@ -40,6 +43,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.google.android.material.card.MaterialCardView;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 import com.pusher.client.channel.SubscriptionEventListener;
@@ -48,13 +53,22 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Reader;
+import java.io.Writer;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
 public class DashboardFragment extends BaseFragment {
+    private final Integer CURRENT_CHART_MAX_VALUES = 4;
+    private final Integer TEMPERATURE_CHART_MAX_VALUES = 4;
     private final Integer TOTAL_REQUEST_COUNT = 5;
 
     private LineChart chartElectricalCurrent, chartTemperature;
@@ -68,6 +82,15 @@ public class DashboardFragment extends BaseFragment {
     private Toast currentTouchToast;
     private Integer requestCount;
 
+    private Pusher pusher;
+
+    // Auxiliary properties
+    private DashboardData data;
+//    private Boolean bedState, doorState;
+//    private String weatherState;
+//    private Integer temperatureState;
+//    private List<SMARTAAL.CurrentLastValues.Data> currentValues;
+//    private List<SMARTAAL.InternalTempLastValues.Data> internalTempValues;
 
     public DashboardFragment() {}
 
@@ -82,9 +105,12 @@ public class DashboardFragment extends BaseFragment {
     protected void onCreateViewActions(@NonNull LayoutInflater inflater,
                                        @Nullable ViewGroup container,
                                        @Nullable Bundle savedInstanceState) {
+        this.data = new DashboardData();
+
         bindViews();
         setupStaticResources();
         initializeCharts();
+        restoreSavedData();
         loadStatusCardsAndCharts();
         bindSockets();
     }
@@ -92,6 +118,27 @@ public class DashboardFragment extends BaseFragment {
     @Override
     protected int getLayoutResourceId() {
         return R.layout.fragment_dashboard;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        pusher.connect();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        pusher.disconnect();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        pusher.unsubscribe(Constants.Pusher.CHANNEL_CURRENT);
+        pusher.unsubscribe(Constants.Pusher.CHANNEL_DOOR_VALUE);
+        pusher.unsubscribe(Constants.Pusher.CHANNEL_BED_VALUE);
+        pusher.unsubscribe(Constants.Pusher.CHANNEL_INTERNAL_TEMP);
     }
 
     private void initializeCharts() {
@@ -102,7 +149,7 @@ public class DashboardFragment extends BaseFragment {
     private void bindSockets() {
         PusherOptions options = new PusherOptions();
         options.setCluster("eu");
-        Pusher pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
+        pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
 
         pusher
             .subscribe(Constants.Pusher.CHANNEL_CURRENT)
@@ -118,7 +165,7 @@ public class DashboardFragment extends BaseFragment {
                                     arr.getString(2)
                                 );
                         addLineChartEntry(chartElectricalCurrent, currentChartEntries,
-                                Constants.CURRENT_CHART_MAX_VALUES, sensorData);
+                                CURRENT_CHART_MAX_VALUES, sensorData);
                     }
                 } catch (JSONException | ParseException e) {
                     Log.d(Constants.DEBUG_TAG, String.format(
@@ -152,6 +199,7 @@ public class DashboardFragment extends BaseFragment {
         updateBooleanStatusCard(tvStatusAwake, iconContainer, iconView, isAwake,
                 R.color.md_green_500, R.color.md_red_500, R.string.label_yes, R.string.label_no,
                 R.drawable.ic_mdi_bed_empty_black_24dp, R.drawable.ic_hotel_black_24dp);
+        this.data.setAwake(isAwake);
     }
 
     private void updateDoorState(boolean isInside) {
@@ -160,6 +208,7 @@ public class DashboardFragment extends BaseFragment {
         updateBooleanStatusCard(tvStatusInside, iconContainer, iconView, isInside,
                 R.color.md_green_500, R.color.md_red_500, R.string.label_inside, R.string.label_outside,
                 R.drawable.ic_mdi_door_closed_black_24dp, R.drawable.ic_mdi_door_open_black_24dp);
+        this.data.setInside(isInside);
     }
 
     private void updateWeatherState(String weatherCondition) {
@@ -202,6 +251,8 @@ public class DashboardFragment extends BaseFragment {
         weatherStateIcon.setImageResource(weatherIcon);
         weatherIconView.setCardBackgroundColor(
                 ContextCompat.getColor(rootView.getContext(), weatherColor));
+
+        this.data.setWeatherCondition(weatherCondition);
     }
 
     private void updateTemperatureState(int temperature) {
@@ -227,6 +278,8 @@ public class DashboardFragment extends BaseFragment {
         temperatureStateIcon.setImageResource(temperatureIcon);
         temperatureIconView.setCardBackgroundColor(
                 ContextCompat.getColor(rootView.getContext(), temperatureColor));
+
+        this.data.setTemperature(temperature);
     }
 
     private void loadStatusCardsAndCharts() {
@@ -236,10 +289,63 @@ public class DashboardFragment extends BaseFragment {
         loadLineChartLastValues();
     }
 
-    private void handleStatusCardDataLoadingSuccessful() {
+    private void finishDataLoadingProcess() {
+        setRefreshLayoutState(false);
+        saveCurrentData();
+    }
+
+    //region Data persisting
+    private String getStoragePath() {
+        return rootView.getContext().getFilesDir().getPath() + "/" +
+                Constants.STORAGE_DASHBOARD_FILENAME;
+    }
+
+    private void restoreSavedData() {
+        try (Reader reader = new FileReader(getStoragePath())) {
+            this.data = new Gson().fromJson(reader, DashboardData.class);
+            if (this.data != null) {
+                loadRestoredData(this.data);
+            }
+        } catch (IOException | IllegalStateException e) {
+            Log.d(Constants.DEBUG_TAG, "Failed to load dashboard data: " + e.getLocalizedMessage());
+        }
+    }
+
+    private void saveCurrentData() {
+        try (Writer writer = new FileWriter(getStoragePath())) {
+            new Gson().toJson(this.data, writer);
+        } catch (IOException | IllegalStateException e) {
+            Log.d(Constants.DEBUG_TAG, "Failed to write dashboard data: " + e.getLocalizedMessage());
+        }
+    }
+
+    private void loadRestoredData(DashboardData data) {
+        final Boolean isAwake = data.getAwake();
+        final Boolean isInside = data.getInside();
+        final String weatherCondition = data.getWeatherCondition();
+        final Integer temperature = data.getTemperature();
+        final List<SMARTAAL.CurrentLastValues.Data> currentValues = data.getCurrentValues();
+        final List<SMARTAAL.InternalTempLastValues.Data> internalTempValues = data.getInternalTempValues();
+
+        if (isAwake != null) updateBedState(isAwake);
+        if (isInside != null) updateDoorState(isInside);
+        if (weatherCondition != null) updateWeatherState(weatherCondition);
+        if (temperature != null) updateTemperatureState(temperature);
+        if (currentValues != null) {
+            loadChartData(chartElectricalCurrent, currentValues,
+                    currentChartEntries, CURRENT_CHART_MAX_VALUES);
+        }
+        if (internalTempValues != null) {
+            loadChartData(chartTemperature, internalTempValues,
+                    temperatureChartEntries, TEMPERATURE_CHART_MAX_VALUES);
+        }
+    }
+    //endregion
+
+    private void handleStatusCardDataLoadingSuccess() {
         // TODO: Concurrency problems?
         if (++requestCount >= TOTAL_REQUEST_COUNT) {
-            setRefreshLayoutState(false);
+            finishDataLoadingProcess();
         }
     }
 
@@ -259,7 +365,7 @@ public class DashboardFragment extends BaseFragment {
                 user.getAcessToken(),
                 state -> {
                     updateBedState(state.isAwake());
-                    handleStatusCardDataLoadingSuccessful();
+                    handleStatusCardDataLoadingSuccess();
                 },
                 e -> handleStatusCardDataLoadingFailure(e, "getBedState"));
         final SMARTAAL.DoorState getDoorState = new SMARTAAL.DoorState(
@@ -267,7 +373,7 @@ public class DashboardFragment extends BaseFragment {
                 user.getAcessToken(),
                 state -> {
                     updateDoorState(state.isInside());
-                    handleStatusCardDataLoadingSuccessful();
+                    handleStatusCardDataLoadingSuccess();
                 },
                 e -> handleStatusCardDataLoadingFailure(e, "getDoorState"));
         final SMARTAAL.TemperatureValue getWeatherAndTemperature = new SMARTAAL.TemperatureValue(
@@ -276,7 +382,7 @@ public class DashboardFragment extends BaseFragment {
                 state -> {
                     updateWeatherState(state.getWeather());
                     updateTemperatureState(state.getTemperature());
-                    handleStatusCardDataLoadingSuccessful();
+                    handleStatusCardDataLoadingSuccess();
                 },
                 e -> handleStatusCardDataLoadingFailure(e, "getWeatherAndTemperature"));
 
@@ -285,12 +391,15 @@ public class DashboardFragment extends BaseFragment {
         getWeatherAndTemperature.execute();
     }
 
-    private <V extends SimpleValueSensor> void handleChartDataLoadingSuccessful(
+    private <V extends SimpleValueSensor> void loadChartData(
             LineChart chart, List<V> values, List<Entry> currentChartEntries, Integer maxValues) {
         addLineChartEntries(chart, currentChartEntries, maxValues, values);
-        // TODO: Concurrency problems?
-        if (++requestCount >= TOTAL_REQUEST_COUNT) {
-            setRefreshLayoutState(false);
+
+        if (requestCount != null) {
+            // TODO: Concurrency problems?
+            if (++requestCount >= TOTAL_REQUEST_COUNT) {
+                finishDataLoadingProcess();
+            }
         }
     }
 
@@ -306,15 +415,21 @@ public class DashboardFragment extends BaseFragment {
         final User user = AuthManager.getInstance().getUser();
 
         final SMARTAAL.CurrentLastValues getCurrentLastValues = new SMARTAAL.CurrentLastValues(
-                user.getElder_id(), Constants.CURRENT_CHART_MAX_VALUES, user.getAcessToken(),
-                values -> handleChartDataLoadingSuccessful(chartElectricalCurrent, values,
-                        currentChartEntries, Constants.CURRENT_CHART_MAX_VALUES),
+                user.getElder_id(), CURRENT_CHART_MAX_VALUES, user.getAcessToken(),
+                values -> {
+                    loadChartData(chartElectricalCurrent, values,
+                            currentChartEntries, CURRENT_CHART_MAX_VALUES);
+                    this.data.setCurrentValues(values);
+                },
                 this::handleChartDataLoadingFailed
         );
         final SMARTAAL.InternalTempLastValues getTemperatureLastValues = new SMARTAAL.InternalTempLastValues(
-                user.getElder_id(), Constants.TEMPERATURE_CHART_MAX_VALUES, user.getAcessToken(),
-                values -> handleChartDataLoadingSuccessful(chartTemperature, values,
-                        temperatureChartEntries, Constants.TEMPERATURE_CHART_MAX_VALUES),
+                user.getElder_id(), TEMPERATURE_CHART_MAX_VALUES, user.getAcessToken(),
+                values -> {
+                    loadChartData(chartTemperature, values,
+                            temperatureChartEntries, TEMPERATURE_CHART_MAX_VALUES);
+                    this.data.setInternalTempValues(values);
+                },
                 this::handleChartDataLoadingFailed
         );
 
@@ -367,7 +482,7 @@ public class DashboardFragment extends BaseFragment {
 
     @SuppressLint("SimpleDateFormat")
     private Entry getChartEntry(SimpleValueSensor value) {
-        String strDate = new SimpleDateFormat("HHmmss").format(value.getDate());
+        String strDate = DateUtil.getStringFromDate(value.getDate(), "HHmmss");
         float date = Float.valueOf("0." + strDate);
         float val = value.getValue();
         return new Entry(date, val);
@@ -413,9 +528,8 @@ public class DashboardFragment extends BaseFragment {
 
                 try {
                     final String entryPointDate = String.valueOf(entry.getX());
-                    final SimpleDateFormat formattedDate = new SimpleDateFormat("HHmmss");
-                    final Date date = formattedDate.parse(entryPointDate.substring(2));
-                    final String strDate = new SimpleDateFormat("HH:mm:ss").format(date);
+                    final Date date = DateUtil.getDateFromString(entryPointDate.substring(2), "HHmmss");
+                    final String strDate = DateUtil.getStringFromDate(date, Constants.TIME_FORMAT);
 
                     currentTouchToast = Toast.makeText(rootView.getContext(),
                             "Electrical current value: " + entry.getY() + "W\nTime: " + strDate,

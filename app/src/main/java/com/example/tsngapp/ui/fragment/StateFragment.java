@@ -96,17 +96,13 @@ public class StateFragment extends BaseFragment
         }
     }
 
+    /* Loops through all active fragments on the manager and execute their back press
+     * handler, only after that it performs it's own back press actions */
     @Override
     public boolean onBackPressed() {
-        final List<Fragment> fragments = fragmentManager.getFragments();
-
-        boolean handled = false;
-        for (Fragment f : fragments) {
-            if (f instanceof BaseFragment) {
-                handled = ((BaseFragment) f).onBackPressed();
-                if (handled) {
-                    return true;
-                }
+        for (Fragment f : fragmentManager.getFragments()) {
+            if (f instanceof BaseFragment && ((BaseFragment) f).onBackPressed()) {
+                return true;
             }
         }
 

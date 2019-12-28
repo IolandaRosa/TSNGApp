@@ -3,6 +3,10 @@ package com.example.tsngapp.helpers;
 public class Constants {
     public static final String DEBUG_TAG = "DEBUG_TSNGApp";
 
+    public static final String SHORT_DATE_FORMAT = "yyyy-MM-dd";
+    public static final String FULL_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    public static final String TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+
     public static final int REQUEST_READ_TIMEOUT = 10000;
     public static final int REQUEST_CONNECT_TIMEOUT = 15000;
 
@@ -44,9 +48,6 @@ public class Constants {
     // arguments: elderid, division (all, bedroom, kitchen, bathroom, attic & livingroom)
     public static final String DIVISION_VALUES_URL = BASE_API_URL + "division/%d/division/%s/all";
 
-    public static final Integer CURRENT_CHART_MAX_VALUES = 4;
-    public static final Integer TEMPERATURE_CHART_MAX_VALUES = 3;
-
     //Activities
     public static final int REGISTER_ACTIVITY_CODE = 1;
     public static final String INTENT_USER_KEY = "user";
@@ -73,6 +74,9 @@ public class Constants {
         public static final String EVENT_NEW_WINDOW_VALUE= "App\\Events\\NewWindowValueEvent";
         public static final String EVENT_NEW_DIVISION_VALUE= "App\\Events\\NewDivisionValueEvent";
     }
+
+    public static final String STORAGE_DASHBOARD_FILENAME = SHARED_PREFS_NAME + "_" + "Dashboard";
+    public static final String STORAGE_ELDER_PROFILE_PICTURE_FILENAME = SHARED_PREFS_NAME + "_" + "elderProfilePicture";
 }
 
 
