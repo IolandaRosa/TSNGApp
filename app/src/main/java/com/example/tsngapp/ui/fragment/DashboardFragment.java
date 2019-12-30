@@ -65,7 +65,7 @@ import java.util.List;
 public class DashboardFragment extends BaseFragment {
     private final Integer CURRENT_CHART_MAX_VALUES = 4;
     private final Integer TEMPERATURE_CHART_MAX_VALUES = 4;
-    private final Integer TOTAL_REQUEST_COUNT = 5;
+    private final Integer TOTAL_REQUEST_COUNT = 6;
 
     private LineChart chartElectricalCurrent, chartTemperature;
     private View currentChartView, temperatureChartView, bedStateView, doorStateView,
@@ -609,7 +609,6 @@ public class DashboardFragment extends BaseFragment {
         xAxis.setValueFormatter(new TimestampAxisFormatter());
         xAxis.setTextColor(currentCircleColor);
         xAxis.setGridColor(currentGridColor);
-        xAxis.setDrawAxisLine(true);
         xAxis.setAxisLineColor(currentGridColor);
     }
 
