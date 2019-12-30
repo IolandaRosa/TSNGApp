@@ -31,25 +31,6 @@
             android:name=".ui.LoginActivity"
             android:configChanges="orientation|screenSize"
             android:screenOrientation="locked" />
-
-<!--        <activity-alias-->
-<!--            android:name=".LauncherLogin"-->
-<!--            android:targetActivity=".ui.LoginActivity"-->
-<!--            android:enabled="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity-alias>-->
-<!--        <activity-alias-->
-<!--            android:name=".LauncherLoggedIn"-->
-<!--            android:targetActivity=".ui.LoggedInActivity"-->
-<!--            android:enabled="false">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </activity-alias>-->
     </application>
 
 </manifest>

@@ -79,6 +79,9 @@
     <string name="label_normal_level">Normal level</string>
     <string name="label_danger">Danger</string>
     <string name="label_no_data_to_display">No data to display</string>
+    <string name="label_password">Password</string>
+    <string name="label_no_account_text">Don\'t have an account?</string>
+    <string name="label_sign_up">Sign up</string>
     <string-array name="array_divisions">
         <item>All</item>
         <item>Bedroom</item>

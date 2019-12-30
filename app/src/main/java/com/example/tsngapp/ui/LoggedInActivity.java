@@ -201,16 +201,6 @@ public class LoggedInActivity extends AppCompatActivity implements
         new File(getFilesDir().getPath() + Constants.STORAGE_DASHBOARD_FILENAME).delete();
         new File(getFilesDir().getPath() + Constants.STORAGE_ELDER_PROFILE_PICTURE_FILENAME).delete();
 
-        // Point to the Login Activity
-//        ComponentName cnLoggedInActivity = new ComponentName(
-//                this, "com.example.tsngapp.LauncherLoggedIn");
-//        ComponentName cnLoginActivity = new ComponentName(
-//                this, "com.example.tsngapp.LauncherLogin");
-//        getPackageManager().setComponentEnabledSetting(cnLoggedInActivity,
-//                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-//        getPackageManager().setComponentEnabledSetting(cnLoginActivity,
-//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-
         // Redirect to the login activity
         startActivity(new Intent(this, LoginActivity.class));
         finish();

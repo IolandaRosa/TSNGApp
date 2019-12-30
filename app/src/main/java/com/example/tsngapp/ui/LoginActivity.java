@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
@@ -44,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     private User user;
     private LinearLayout progress_Layout;
     private TextView progressaLayoutTextView;
+    private TextView tvNoAccountBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +59,16 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        this.usernameEditText = findViewById(R.id.registerNameEditText);
-        this.passwordEditText = findViewById(R.id.registerUsernameEditText);
+        this.usernameEditText = findViewById(R.id.et_email_login);
+        this.passwordEditText = findViewById(R.id.et_password_login);
         this.progress_Layout = findViewById(R.id.progress_layout);
         this.progressaLayoutTextView = findViewById(R.id.progressLayoutTextView);
+        this.tvNoAccountBtn = findViewById(R.id.tv_no_account_button);
+
+        tvNoAccountBtn.setOnClickListener(v -> {
+            startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class),
+                    Constants.REGISTER_ACTIVITY_CODE);
+        });
 
         //Ve se token ainda esta valido para autenticação
         String token = LoginManager.getInstance().retrieveAuthToken(this);
@@ -207,14 +215,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void performPostLoginActions() {
-        // Point to the LoggedInActivity
-//        getPackageManager().setComponentEnabledSetting(
-//                new ComponentName(this, "com.example.tsngapp.LauncherLoggedIn"),
-//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-//        getPackageManager().setComponentEnabledSetting(
-//                new ComponentName(this, "com.example.tsngapp.LauncherLogin"),
-//                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
-
         // Redirect to the LoggedInActivity
         startActivity(new Intent(this, LoggedInActivity.class));
         finish();
