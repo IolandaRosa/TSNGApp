@@ -17,7 +17,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.ErrorCode;
@@ -47,6 +47,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -154,9 +155,6 @@ public class LoginActivity extends AppCompatActivity {
 
             String token = LoginManager.getInstance().getTokenFromJson(jsonString);
 
-            //Grava token nas shared preferences
-            LoginManager.getInstance().saveAuthToken(token, LoginActivity.this);
-
             //Vai buscar a informação do utilizador e do elder e continua o login
             performPostAuthenticationActions(token);
         });
@@ -168,15 +166,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void performPostAuthenticationActions(String token) {
         getUserInfo(token, user -> {
-            user.setAcessToken(token);
+            user.setAccessToken(token);
             getElderInfo(user.getId(), token,
-                    elder -> {
-                        AuthManager.getInstance()
-                                .setUser(user)
-                                .setElder(elder);
-                        redirectLoggedIn();
-                    },
-                    e -> handleLoginFailed("Couldn't get elder, " + e.getMessage())
+                elder -> {
+                    StateManager.getInstance()
+                            .setUser(user)
+                            .setElder(elder);
+                    LoginManager.getInstance()
+                            .saveAuthInfo(token, user, elder, this);
+                    performPostLoginActions();
+                },
+                e -> handleLoginFailed("Couldn't get elder, " + e.getMessage())
             );
         }, this::handleLoginFailed);
     }
@@ -206,10 +206,18 @@ public class LoginActivity extends AppCompatActivity {
         new SMARTAAL.ElderInfo(userId, token, resultListener, failureListener).execute();
     }
 
-    private void redirectLoggedIn() {
-        Intent i = new Intent(this, LoggedInActivity.class);
-        startActivity(i);
-        this.finish();
+    private void performPostLoginActions() {
+        // Point to the LoggedInActivity
+//        getPackageManager().setComponentEnabledSetting(
+//                new ComponentName(this, "com.example.tsngapp.LauncherLoggedIn"),
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+//        getPackageManager().setComponentEnabledSetting(
+//                new ComponentName(this, "com.example.tsngapp.LauncherLogin"),
+//                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+
+        // Redirect to the LoggedInActivity
+        startActivity(new Intent(this, LoggedInActivity.class));
+        finish();
     }
 
     private void handleLoginFailed(Exception e) {

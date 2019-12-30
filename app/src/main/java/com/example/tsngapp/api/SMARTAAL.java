@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import com.example.tsngapp.api.model.SimpleValueSensor;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DateUtil;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.network.AsyncTaskRequest;
 import com.example.tsngapp.network.AsyncTaskResult;
@@ -17,7 +18,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
@@ -357,20 +357,21 @@ public class SMARTAAL {
         public static class Data extends SimpleValueSensor {
             public Data() {}
 
-            public Data(float value, Date date) {
-                super(value, date);
+            public Data(int id, float value, Date date) {
+                super(id, value, date);
             }
 
-            public Data(float value, String strDate) throws ParseException {
-                super(value, strDate);
+            public Data(int id, float value, String strDate) throws ParseException {
+                super(id, value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
             public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final int id = StateManager.getInstance().getRng().nextInt(Constants.RNG_BOUND);
                 final String dateString = jsonObject.getString("updated_at");
                 final Date date = DateUtil.getDateFromString(dateString);
 
-                return new Data(Float.valueOf(jsonObject.getString("value")), date);
+                return new Data(id, Float.valueOf(jsonObject.getString("value")), date);
             }
         }
 
@@ -466,20 +467,21 @@ public class SMARTAAL {
         public static class Data extends SimpleValueSensor {
             public Data() {}
 
-            public Data(float value, Date date) {
-                super(value, date);
+            public Data(int id, float value, Date date) {
+                super(id, value, date);
             }
 
-            public Data(float value, String strDate) throws ParseException {
-                super(value, strDate);
+            public Data(int id, float value, String strDate) throws ParseException {
+                super(id, value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
             public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final int id = StateManager.getInstance().getRng().nextInt(Constants.RNG_BOUND);
                 final String dateString = jsonObject.getString("date");
                 final Date date = DateUtil.getDateFromString(dateString);
 
-                return new Data(Float.valueOf(jsonObject.getString("value")), date);
+                return new Data(id, Float.valueOf(jsonObject.getString("value")), date);
             }
         }
 
@@ -610,6 +612,56 @@ public class SMARTAAL {
             }
 
             return new AsyncTaskResult<>(new LinkedList<>());
+        }
+    }
+
+    public static class GasEmission extends AsyncTaskRequest<GasEmission.Data> {
+        public static class Data {
+            private boolean isNormal;
+            private Date date;
+
+            public Data(boolean isNormal, Date date) {
+                this.isNormal = isNormal;
+                this.date = date;
+            }
+
+            public boolean isNormal() {
+                return isNormal;
+            }
+
+            public Date getDate() {
+                return date;
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final String dateString = jsonObject.getString("date");
+                final Date date = DateUtil.getDateFromString(dateString);
+                final float value = Float.valueOf(jsonObject.getString("value"));
+                return new Data(value < 1000, date);
+            }
+        }
+
+        @SuppressLint("DefaultLocale")
+        public GasEmission(int elderId, String token,
+                           OnResultListener<Data> resultListener,
+                           OnFailureListener failureListener) {
+            super(token, String.format(Constants.GAS_EMISSION_VALUE_URL, elderId),
+                    resultListener, failureListener);
+        }
+
+        @Override
+        public AsyncTaskResult<Data> request() {
+            try {
+                final JSONObject response = performHttpGetRequest(token, url);
+                if (response != null) {
+                    Data data = Data.fromJSON(response);
+                    return new AsyncTaskResult<>(data);
+                }
+            } catch (JSONException | ParseException e) {
+                return new AsyncTaskResult<>(e);
+            }
+            return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
 }

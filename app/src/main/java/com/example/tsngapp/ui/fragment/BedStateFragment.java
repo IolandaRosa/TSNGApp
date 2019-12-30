@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.BedStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
@@ -44,8 +44,8 @@ public class BedStateFragment extends BaseStateMenuItemFragment {
 
     private void loadListData() {
         refreshLayout.setRefreshing(true);
-        new SMARTAAL.BedLastValues(AuthManager.getInstance().getElder().getId(), NUM_OF_VALUES,
-            AuthManager.getInstance().getUser().getAcessToken(), r -> {
+        new SMARTAAL.BedLastValues(StateManager.getInstance().getElder().getId(), NUM_OF_VALUES,
+            StateManager.getInstance().getUser().getAcessToken(), r -> {
                 listAdapter.setList(r);
                 refreshLayout.setRefreshing(false);
             },

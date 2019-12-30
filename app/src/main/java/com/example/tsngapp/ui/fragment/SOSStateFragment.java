@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.SOSStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
@@ -42,8 +42,8 @@ public class SOSStateFragment extends BaseStateMenuItemFragment {
 
     private void loadListData() {
         refreshLayout.setRefreshing(true);
-        new SMARTAAL.SOSValues(AuthManager.getInstance().getElder().getId(),
-            AuthManager.getInstance().getUser().getAcessToken(), r -> {
+        new SMARTAAL.SOSValues(StateManager.getInstance().getElder().getId(),
+            StateManager.getInstance().getUser().getAcessToken(), r -> {
                 listAdapter.setList(r);
                 refreshLayout.setRefreshing(false);
             },

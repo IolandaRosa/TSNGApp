@@ -93,7 +93,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:text="@string/label_name"
-                                    android:textColor="@color/md_grey_500" />
+                                    android:textColor="@color/md_grey_500"
+                                    android:textStyle="bold"/>
 
                                 <TextView
                                     android:id="@+id/tv_profile_name"
@@ -101,7 +102,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:text="..."
-                                    android:textColor="@android:color/black" />
+                                    android:textColor="@color/md_grey_900" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -133,7 +134,8 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:text="@string/label_username"
-                                    android:textColor="@color/md_grey_500" />
+                                    android:textColor="@color/md_grey_500"
+                                    android:textStyle="bold"/>
 
                                 <TextView
                                     android:id="@+id/tv_profile_username"
@@ -141,7 +143,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:text="..."
-                                    android:textColor="@android:color/black" />
+                                    android:textColor="@color/md_grey_900" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -171,8 +173,9 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
+                                    android:text="@string/label_email"
                                     android:textColor="@color/md_grey_500"
-                                    android:text="@string/label_email" />
+                                    android:textStyle="bold"/>
 
                                 <TextView
                                     android:id="@+id/tv_profile_email"
@@ -180,7 +183,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="16dp"
                                     android:text="..."
-                                    android:textColor="@android:color/black" />
+                                    android:textColor="@color/md_grey_900" />
                             </LinearLayout>
                         </LinearLayout>
                     </LinearLayout>

@@ -16,23 +16,18 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DateUtil;
 import com.example.tsngapp.helpers.DrawableUtil;
 import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.model.UserGender;
-import com.example.tsngapp.network.AsyncTaskRequest;
 import com.example.tsngapp.network.AsyncTaskResult;
-import com.example.tsngapp.network.OnFailureListener;
 import com.example.tsngapp.network.OnResultListener;
-
-import org.json.JSONException;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.ParseException;
 
 public class ProfileFragment extends BaseFragment {
     private ProfileFragmentActionListener actionListener;
@@ -70,9 +65,9 @@ public class ProfileFragment extends BaseFragment {
 
     @SuppressLint("DefaultLocale")
     private void fillProfileInfo() {
-        final User user = AuthManager.getInstance().getUser();
+        final User user = StateManager.getInstance().getUser();
         if (user != null) {
-            final Elder elder = AuthManager.getInstance().getElder();
+            final Elder elder = StateManager.getInstance().getElder();
 
             restoreImageBitmap(
                     bitmap -> ivProfilePicture.setImageBitmap(bitmap),

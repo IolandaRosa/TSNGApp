@@ -4,15 +4,18 @@ public class Constants {
     public static final String DEBUG_TAG = "DEBUG_TSNGApp";
 
     public static final String SHORT_DATE_FORMAT = "yyyy-MM-dd";
-    public static final String FULL_DATE_FORMAT = "yyyy-MM-dd hh:mm:ss";
-    public static final String TIME_FORMAT = "yyyy-MM-dd hh:mm:ss";
+    public static final String FULL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String FULL_TIME_FORMAT = "HH:mm:ss";
+    public static final String SHORT_TIME_FORMAT = "HH:mm";
 
     public static final int REQUEST_READ_TIMEOUT = 10000;
     public static final int REQUEST_CONNECT_TIMEOUT = 15000;
 
     //SHARED_PREFS
     public static final String SHARED_PREFS_NAME = "TSNGApp";
-    public static final String TOKEN_KEY = "token";
+    public static final String SP_TOKEN_KEY = SHARED_PREFS_NAME + "_token";
+    public static final String SP_USER_KEY = SHARED_PREFS_NAME + "_user";
+    public static final String SP_ELDER_KEY = SHARED_PREFS_NAME + "_elder";
 
     //API
     private static final String BASE_URL = "http://smartaal.dei.estg.ipleiria.pt/";
@@ -31,6 +34,7 @@ public class Constants {
     public static final String BED_STATE_URL = BASE_API_URL + "bed/%d/last";
     public static final String TEMPERATURE_VALUE_URL = BASE_API_URL + "temperature/%d/last";
     public static final String SOS_VALUE_URL = BASE_API_URL + "sos/%d/all";
+    public static final String GAS_EMISSION_VALUE_URL = BASE_API_URL + "gas/%d/last";
 
     // last values format order: elderid, number of values
     public static final String DOOR_LAST_VALUES_URL = BASE_API_URL + "door/%d/lastValues/%d";
@@ -77,6 +81,8 @@ public class Constants {
 
     public static final String STORAGE_DASHBOARD_FILENAME = SHARED_PREFS_NAME + "_" + "Dashboard";
     public static final String STORAGE_ELDER_PROFILE_PICTURE_FILENAME = SHARED_PREFS_NAME + "_" + "elderProfilePicture";
+
+    public static final int RNG_BOUND = 1000000;
 }
 
 

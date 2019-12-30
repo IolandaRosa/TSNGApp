@@ -14,7 +14,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
@@ -43,14 +43,19 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        // Try to restore data saved on Shared Preferences
+        if (!StateManager.getInstance().isAuthenticationInfoLoaded()) {
+            final boolean dataWasRestored = StateManager.getInstance().loadStoredAuthenticationInfo(this);
+            if (!dataWasRestored) performPostLogoutActions();
+        }
         setContentView(R.layout.activity_logged_in);
 
-        bindViews();
-        bottomNav.setOnNavigationItemSelectedListener(navItemClickListener);
+        bindViewsAndActions();
 
         fragmentManager = getSupportFragmentManager();
-//        fragmentManager.addOnBackStackChangedListener(this::printBackStack);
         loadFragment(R.string.label_home, new DashboardFragment(), false);
     }
 
@@ -178,25 +183,43 @@ public class LoggedInActivity extends AppCompatActivity implements
     private void makeLogout() {
         new AsyncTaskPostLogout(jsonString -> {
                 if (jsonString.equals(Constants.HTTP_OK)) {
-                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
-
-                    //todo - retira token das shared preferences e coloca user a null e passa para a login activity
-                    AuthManager.getInstance().setUser(null);
-                    LoginManager.getInstance().removeFromSharedPreference(this);
-
-                    new File(getFilesDir().getPath() + Constants.STORAGE_DASHBOARD_FILENAME).delete();
-                    startActivity(new Intent(this, LoginActivity.class));
-                    this.finish();
+                    performPostLogoutActions();
                 } else {
-                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, R.string.logout_failed, Toast.LENGTH_SHORT).show();
+                    Log.d(Constants.DEBUG_TAG, "Couldn't sign out, didn't receive an HTTP success code.");
                 }
-            }, AuthManager.getInstance().getUser().getAcessToken()
+            }, StateManager.getInstance().getUser().getAcessToken()
         ).execute(Constants.LOGOUT_URL);
     }
 
-    private void bindViews() {
+    private void performPostLogoutActions() {
+        // Clear the authentication manager(s)
+        StateManager.getInstance().setUser(null);
+        LoginManager.getInstance().clearAuthenticationInfo(this);
+
+        // Delete cached information
+        new File(getFilesDir().getPath() + Constants.STORAGE_DASHBOARD_FILENAME).delete();
+        new File(getFilesDir().getPath() + Constants.STORAGE_ELDER_PROFILE_PICTURE_FILENAME).delete();
+
+        // Point to the Login Activity
+//        ComponentName cnLoggedInActivity = new ComponentName(
+//                this, "com.example.tsngapp.LauncherLoggedIn");
+//        ComponentName cnLoginActivity = new ComponentName(
+//                this, "com.example.tsngapp.LauncherLogin");
+//        getPackageManager().setComponentEnabledSetting(cnLoggedInActivity,
+//                PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+//        getPackageManager().setComponentEnabledSetting(cnLoginActivity,
+//                PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+
+        // Redirect to the login activity
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    private void bindViewsAndActions() {
         actionBar = getSupportActionBar();
         bottomNav = findViewById(R.id.bnv_logged_in_navigation);
+        bottomNav.setOnNavigationItemSelectedListener(navItemClickListener);
     }
 
     //region Helper methods

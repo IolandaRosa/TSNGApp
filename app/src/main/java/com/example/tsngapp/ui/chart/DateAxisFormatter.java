@@ -20,14 +20,16 @@ public class DateAxisFormatter extends ValueFormatter {
 
     @Override
     public String getAxisLabel(float value, AxisBase axis) {
-        Date date = new Date();
-        try {
-            String strDate = String.valueOf(value);
-            date = DateUtil.getDateFromString(strDate, "HHmmss");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+//        Date date = new Date();
+//        try {
+//            String strDate = String.valueOf(value);
+//            date = DateUtil.getDateFromString(strDate, "HHmmss");
+//        } catch (ParseException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return DateUtil.getStringFromDate(date, Constants.FULL_TIME_FORMAT);
 
-        return DateUtil.getStringFromDate(date, Constants.TIME_FORMAT);
+        return String.valueOf(value);
     }
 }

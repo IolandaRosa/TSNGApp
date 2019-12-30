@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.example.tsngapp.R;
-import com.example.tsngapp.helpers.AuthManager;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.ui.adapter.WindowStateRecyclerAdapter;
 import com.example.tsngapp.ui.adapter.decorator.SimpleHorizontalDividerItemDecoration;
@@ -49,8 +49,8 @@ public class WindowStateFragment extends BaseStateMenuItemFragment {
 
     private void loadListData(String division) {
         refreshLayout.setRefreshing(true);
-        new SMARTAAL.WindowLastValues(AuthManager.getInstance().getElder().getId(), division,
-            AuthManager.getInstance().getUser().getAcessToken(), r -> {
+        new SMARTAAL.WindowLastValues(StateManager.getInstance().getElder().getId(), division,
+            StateManager.getInstance().getUser().getAcessToken(), r -> {
                 listAdapter.setList(r);
                 refreshLayout.setRefreshing(false);
             },

@@ -74,6 +74,10 @@
     <string name="profile_account_info_title">Account information</string>
     <string name="label_name">Name</string>
     <string name="undefined_gender">Undefined gender</string>
+    <string name="logout_failed">Couldn\'t sign out</string>
+    <string name="label_gas_emition">Gas emition</string>
+    <string name="label_normal_level">Normal level</string>
+    <string name="label_danger">Danger</string>
     <string-array name="array_divisions">
         <item>All</item>
         <item>Bedroom</item>
