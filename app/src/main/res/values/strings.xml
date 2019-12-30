@@ -78,6 +78,7 @@
     <string name="label_gas_emition">Gas emition</string>
     <string name="label_normal_level">Normal level</string>
     <string name="label_danger">Danger</string>
+    <string name="label_no_data_to_display">No data to display</string>
     <string-array name="array_divisions">
         <item>All</item>
         <item>Bedroom</item>

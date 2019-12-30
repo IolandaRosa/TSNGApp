@@ -3,6 +3,7 @@ package com.example.tsngapp.ui.fragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
@@ -43,13 +44,16 @@ public class SOSStateFragment extends BaseStateMenuItemFragment {
     private void loadListData() {
         refreshLayout.setRefreshing(true);
         new SMARTAAL.SOSValues(StateManager.getInstance().getElder().getId(),
-            StateManager.getInstance().getUser().getAcessToken(), r -> {
-                listAdapter.setList(r);
+            StateManager.getInstance().getUser().getAcessToken(), results -> {
+                listAdapter.setList(results);
                 refreshLayout.setRefreshing(false);
+                rootView.findViewById(R.id.tv_no_data)
+                        .setVisibility(results.isEmpty() ? View.VISIBLE : View.GONE);
             },
             e -> {
                 Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 refreshLayout.setRefreshing(false);
+                rootView.findViewById(R.id.tv_no_data).setVisibility(View.GONE);
             }
         ).execute();
     }

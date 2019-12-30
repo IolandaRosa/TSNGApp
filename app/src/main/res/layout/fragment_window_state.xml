@@ -6,29 +6,34 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_go_back"
             style="@style/StateMenuBackButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <LinearLayout
             android:id="@+id/layout_division_select"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="8dp">
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/btn_go_back">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/label_showing_results_for"
-                android:paddingStart="8dp"/>
+                android:paddingStart="8dp"
+                android:text="@string/label_showing_results_for" />
 
             <Spinner
                 android:id="@+id/sp_divisions"
@@ -40,10 +45,26 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_window_state"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/layout_division_select" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tv_no_data"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/label_no_data_to_display"
+            android:textAlignment="center"
+            app:layout_constraintBottom_toBottomOf="@+id/rv_window_state"
+            app:layout_constraintEnd_toEndOf="@+id/rv_window_state"
+            app:layout_constraintStart_toStartOf="@+id/rv_window_state"
+            app:layout_constraintTop_toTopOf="@+id/rv_window_state" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

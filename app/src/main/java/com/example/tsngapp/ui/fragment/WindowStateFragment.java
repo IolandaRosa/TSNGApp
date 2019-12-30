@@ -50,13 +50,16 @@ public class WindowStateFragment extends BaseStateMenuItemFragment {
     private void loadListData(String division) {
         refreshLayout.setRefreshing(true);
         new SMARTAAL.WindowLastValues(StateManager.getInstance().getElder().getId(), division,
-            StateManager.getInstance().getUser().getAcessToken(), r -> {
-                listAdapter.setList(r);
+            StateManager.getInstance().getUser().getAcessToken(), results -> {
+                listAdapter.setList(results);
                 refreshLayout.setRefreshing(false);
+                rootView.findViewById(R.id.tv_no_data)
+                        .setVisibility(results.isEmpty() ? View.VISIBLE : View.GONE);
             },
             e -> {
                 Toast.makeText(rootView.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                 refreshLayout.setRefreshing(false);
+                rootView.findViewById(R.id.tv_no_data).setVisibility(View.VISIBLE);
             }
         ).execute();
     }
