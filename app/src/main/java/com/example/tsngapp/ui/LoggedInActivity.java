@@ -198,8 +198,8 @@ public class LoggedInActivity extends AppCompatActivity implements
         LoginManager.getInstance().clearAuthenticationInfo(this);
 
         // Delete cached information
-        new File(getFilesDir().getPath() + Constants.STORAGE_DASHBOARD_FILENAME).delete();
-        new File(getFilesDir().getPath() + Constants.STORAGE_ELDER_PROFILE_PICTURE_FILENAME).delete();
+        new File(getFilesDir().getPath() + "/" + Constants.STORAGE_DASHBOARD_FILENAME).delete();
+        new File(getFilesDir().getPath() + "/" + Constants.STORAGE_ELDER_PROFILE_PICTURE_FILENAME).delete();
 
         // Redirect to the login activity
         startActivity(new Intent(this, LoginActivity.class));
