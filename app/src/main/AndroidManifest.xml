@@ -26,7 +26,11 @@
         </activity>
         <activity
             android:name=".ui.RegisterActivity"
-            android:configChanges="orientation|screenSize" />
+            android:configChanges="orientation|screenSize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.LoginActivity" />
+        </activity>
         <activity
             android:name=".ui.LoginActivity"
             android:configChanges="orientation|screenSize"
