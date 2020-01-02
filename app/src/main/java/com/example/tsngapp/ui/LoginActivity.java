@@ -59,11 +59,14 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.loginBtn).setOnClickListener(loginButtonClicked);
+
         this.usernameEditText = findViewById(R.id.et_email_login);
         this.passwordEditText = findViewById(R.id.et_password_login);
         this.progress_Layout = findViewById(R.id.progress_layout);
         this.progressaLayoutTextView = findViewById(R.id.progressLayoutTextView);
         this.tvNoAccountBtn = findViewById(R.id.tv_no_account_button);
+
 
         tvNoAccountBtn.setOnClickListener(v -> {
             startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class),
@@ -117,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void loginButtonClicked(View view) {
+    private View.OnClickListener loginButtonClicked = v -> {
         //Esconde o teclado
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -131,7 +134,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
         prepareLogin(username, password);
-    }
+    };
 
     private void prepareLogin(String username, String password) {
         final DataToSend dataToSend = LoginManager.getInstance().generateJsonForPost(username, password);
