@@ -25,7 +25,7 @@
     <string name="male">Male</string>
     <string name="photo">Click here to pick a photo from the gallery</string>
     <string name="date_example">yyyy-mm-dd</string>
-    <string name="home_last_current_values">Last electrical current values</string>
+    <string name="home_last_current_values">Last electrical current values (W)</string>
     <string name="chart_current_no_data">No electrical current data available</string>
     <string name="status_card_awake_failed">Failed to get status card data</string>
     <string name="label_yes">Yes</string>
@@ -40,7 +40,7 @@
     <string name="label_home">Home</string>
     <string name="label_profile">Profile</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="home_last_temperature_values">Last internal temperature values</string>
+    <string name="home_last_temperature_values">Last internal temperature values (°C)</string>
     <string name="chart_temperature_no_data">No internal temperature data available</string>
     <string name="profile_account_settings_title">Account Settings</string>
     <string name="label_change_password">Change Password</string>
@@ -54,7 +54,6 @@
     <string name="label_bed_state">Bed state</string>
     <string name="label_current_state">Electrical current state</string>
     <string name="label_door_state">Outside door</string>
-    <string name="label_camera_state">Camera registries</string>
     <string name="label_division_state">House division state</string>
     <string name="label_internal_temp_state">Internal temperature</string>
     <string name="label_window_state">House windows</string>
@@ -64,4 +63,34 @@
     <string name="btn_hour">Hour</string>
     <string name="btn_day">Day</string>
     <string name="btn_month">Month</string>
+    <string name="label_entered">Entered</string>
+    <string name="label_left">Left</string>
+    <string name="label_electrical_current">Electrical current</string>
+    <string name="label_asleep">Asleep</string>
+    <string name="label_closed">Closed</string>
+    <string name="label_open">Open</string>
+    <string name="label_on">On</string>
+    <string name="label_off">Off</string>
+    <string name="label_showing_results_for">Showing results for:</string>
+    <string name="label_username">Username</string>
+    <string name="label_email">Email</string>
+    <string name="profile_account_info_title">Account information</string>
+    <string name="label_name">Name</string>
+    <string name="undefined_gender">Undefined gender</string>
+    <string name="logout_failed">Couldn\'t sign out</string>
+    <string name="label_gas_emition">Gas emition</string>
+    <string name="label_normal_level">Normal level</string>
+    <string name="label_danger">Danger</string>
+    <string name="label_no_data_to_display">No data to display</string>
+    <string name="label_password">Password</string>
+    <string name="label_no_account_text">Don\'t have an account?</string>
+    <string name="label_sign_up">Sign up</string>
+    <string-array name="array_divisions">
+        <item>All</item>
+        <item>Bedroom</item>
+        <item>Kitchen</item>
+        <item>Bathroom</item>
+        <item>Attic</item>
+        <item>Living Room</item>
+    </string-array>
 </resources>

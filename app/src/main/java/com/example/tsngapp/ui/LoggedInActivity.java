@@ -1,6 +1,7 @@
 package com.example.tsngapp.ui;
 
 import androidx.annotation.StringRes;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -9,151 +10,76 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
-import com.example.tsngapp.model.Elder;
-import com.example.tsngapp.model.User;
 import com.example.tsngapp.network.AsyncTaskPostLogout;
+import com.example.tsngapp.ui.fragment.BaseFragment;
 import com.example.tsngapp.ui.fragment.DashboardFragment;
 import com.example.tsngapp.ui.fragment.ProfileFragment;
 import com.example.tsngapp.ui.fragment.StateFragment;
-import com.example.tsngapp.ui.fragment.StateMenuFragment;
+import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.io.File;
+
 public class LoggedInActivity extends AppCompatActivity implements
-        ProfileFragment.ProfileFragmentActionListener {
+        ProfileFragment.ProfileFragmentActionListener,
+        BaseFragmentActionListener {
+
+    private final int DASHBOARD_MENU_ITEM_POSITION = 0;
+    private final int STATE_MENU_ITEM_POSITION = 1;
+    private final int PROFILE_MENU_ITEM_POSITION = 2;
 
     private BottomNavigationView bottomNav;
 
-    private User user;
-    private Elder elder;
-
+    private ActionBar actionBar;
     private FragmentManager fragmentManager;
-    private DashboardFragment dashboardFragment;
-    private StateFragment stateFragment;
-    private ProfileFragment profileFragment;
-    private Fragment activeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        // Try to restore data saved on Shared Preferences
+        if (!StateManager.getInstance().isAuthenticationInfoLoaded()) {
+            final boolean dataWasRestored = StateManager.getInstance().loadStoredAuthenticationInfo(this);
+            if (!dataWasRestored) performPostLogoutActions();
+        }
         setContentView(R.layout.activity_logged_in);
 
-        bindViews();
-        bottomNav.setOnNavigationItemSelectedListener(navItemClickListener);
-
-        Intent intent = this.getIntent();
-        Bundle extras = intent.getExtras();
-        user = extras.getParcelable(Constants.INTENT_USER_KEY);
-        elder = extras.getParcelable(Constants.INTENT_ELDER_KEY);
+        bindViewsAndActions();
 
         fragmentManager = getSupportFragmentManager();
-
-        profileFragment = ProfileFragment.newInstance(user, elder);
-        profileFragment.setActionListener(this);
-        stateFragment = StateFragment.newInstance(user, elder);
-        dashboardFragment = DashboardFragment.newInstance(user);
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.main_fragment_container, profileFragment, "profile")
-                .hide(profileFragment)
-                .commit();
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.main_fragment_container, stateFragment, "state")
-                .hide(stateFragment)
-                .commit();
-        fragmentManager
-                .beginTransaction()
-                .add(R.id.main_fragment_container, dashboardFragment, "dashboard")
-                .commit();
-        activeFragment = dashboardFragment;
+        loadFragment(R.string.label_home, new DashboardFragment(), false);
     }
 
     @Override
     public void onBackPressed() {
-//        final boolean bsEmpty = fragmentManager != null && fragmentManager.getBackStackEntryCount() == 0;
-//        if (!bsEmpty) {
-//            fragmentManager.popBackStack();
-//            final String name = fragmentManager.getBackStackEntryAt(0).getName();
-//            changeNavActiveButtom(name);
-//        }
-
-        // TODO: Fix back presses
-        super.onBackPressed();
-    }
-
-    private void changeNavActiveButtom(String className) {
-        if (className.equals(ProfileFragment.class.getName())) {
-            bottomNav.setSelectedItemId(R.id.navigation_profile);
-        } else if (className.equals(StateFragment.class.getName())) {
-            bottomNav.setSelectedItemId(R.id.navigation_state);
-        } else {
-            bottomNav.setSelectedItemId(R.id.navigation_home);
-        }
-    }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
-        switch (item.getItemId()) {
-            case R.id.navigation_home:
-                loadFragment(R.string.label_home, dashboardFragment);
-                return true;
-            case R.id.navigation_state:
-                loadFragment(R.string.label_house_state, stateFragment);
-                return true;
-            case R.id.navigation_profile:
-                loadFragment(R.string.label_profile, profileFragment);
-                return true;
-        }
-        return false;
-    };
-
-    private void loadFragment(@StringRes int title, Fragment fragment) {
-        loadFragment(getString(title), fragment);
-    }
-
-    private void loadFragment(String title, Fragment fragment) {
-        final String fragmentName = fragment.getClass().getSimpleName();
-        if (activeFragment.getClass().getSimpleName().equals(fragmentName)) {
-            return;
-        }
-
-        getSupportActionBar().setTitle(title);
-        FragmentTransaction transaction = fragmentManager
-                .beginTransaction()
-                .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
-                .hide(activeFragment)
-                .show(fragment);
-        activeFragment = fragment;
-        transaction.commit();
-    }
-
-    private void makeLogout() {
-        new AsyncTaskPostLogout(jsonString -> {
-                if (jsonString.equals(Constants.HTTP_OK)) {
-                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
-
-                    //todo - retira token das shared preferences e coloca user a null e passa para a login activity
-                    user = null;
-                    LoginManager.getInstance().removeFromSharedPreference(this);
-
-                    startActivity(new Intent(this, LoginActivity.class));
-                    this.finish();
-                } else {
-                    Toast.makeText(this, "Logout Success", Toast.LENGTH_SHORT).show();
+        /* Loops through all active fragments on the manager and execute their back press
+        * handler, only after that it performs it's own back press actions */
+        boolean handled = false;
+        for (Fragment f : fragmentManager.getFragments()) {
+            if (f instanceof BaseFragment) {
+                if (handled = ((BaseFragment) f).onBackPressed()) {
+                    break;
                 }
-            }, user.getAcessToken()
-        ).execute(Constants.LOGOUT_URL);
+            }
+        }
+
+        if (!handled) {
+            performControlledBackPress();
+        }
     }
 
-    private void bindViews() {
-        bottomNav = findViewById(R.id.bnv_logged_in_navigation);
-    }
-
+    /**
+     * Listens for logout button clicks on the Profile Fragment
+     */
     @Override
     public void onLogoutClicked() {
         DialogUtil.createOkCancelDialog(this, null, R.string.logout_confirmation,
@@ -163,4 +89,196 @@ public class LoggedInActivity extends AppCompatActivity implements
                 }
             }).show();
     }
+
+    /**
+     * Listen for title changing requests from fragments
+     * @param title
+     */
+    @Override
+    public void setTitleFromFragment(@StringRes Integer title) {
+        /* The setSubtitle method doesn't accept a null Integer, only a null to clear the title */
+        if (title != null) {
+            actionBar.setSubtitle(title);
+        } else {
+            actionBar.setSubtitle(null);
+        }
+    }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
+        switch (item.getItemId()) {
+            case R.id.navigation_home:
+                DashboardFragment df = new DashboardFragment();
+                loadFragment(R.string.label_home, df);
+                return true;
+            case R.id.navigation_state:
+                StateFragment sf = new StateFragment(this);
+                loadFragment(R.string.label_house_state, sf);
+                return true;
+            case R.id.navigation_profile:
+                ProfileFragment pf = new ProfileFragment();
+                pf.setActionListener(this);
+                loadFragment(R.string.label_profile, pf);
+                return true;
+        }
+        return false;
+    };
+
+    private void changeTitleAndNavigationFromTag(String className) {
+        if (className != null && className.equals(ProfileFragment.class.getName())) {
+            bottomNav.getMenu().getItem(PROFILE_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_profile);
+        } else if (className != null && className.equals(StateFragment.class.getName())) {
+            bottomNav.getMenu().getItem(STATE_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_house_state);
+        } else {
+            bottomNav.getMenu().getItem(DASHBOARD_MENU_ITEM_POSITION).setChecked(true);
+            actionBar.setTitle(R.string.label_home);
+        }
+    }
+
+    /**
+     * Performs back press actions, giving priority to fragment's back stack popping, in order
+     * to simulate an activity-like behavior on fragment navigation
+     */
+    private void performControlledBackPress() {
+        if (!isFragmentBackStackEmpty()) {
+            fragmentManager.popBackStackImmediate();
+            // If there's only one fragment on the back stack, goes back to the root (Dashboard)
+            final String topFragmentTag = getTopFragmentTagFromBackStack();
+            changeTitleAndNavigationFromTag(topFragmentTag);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private void loadFragment(@StringRes int title, Fragment fragment) {
+        loadFragment(getString(title), fragment, true);
+    }
+
+    private void loadFragment(@StringRes int title, Fragment fragment, boolean addToBackStack) {
+        loadFragment(getString(title), fragment, addToBackStack);
+    }
+
+    private void loadFragment(String title, Fragment fragment) {
+        loadFragment(title, fragment, true);
+    }
+
+    private void loadFragment(String title, Fragment fragment, boolean addToBackStack) {
+        actionBar.setTitle(title);
+
+        final String tag = fragment.getClass().getName();
+        if (isCurrentFragment(tag)) {
+            return;
+        }
+
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
+            .replace(R.id.main_fragment_container, fragment, tag);
+        if (addToBackStack) {
+            ft.addToBackStack(tag);
+        }
+        ft.commit();
+    }
+
+    private void makeLogout() {
+        new AsyncTaskPostLogout(jsonString -> {
+                if (jsonString.equals(Constants.HTTP_OK)) {
+                    performPostLogoutActions();
+                } else {
+                    Toast.makeText(this, R.string.logout_failed, Toast.LENGTH_SHORT).show();
+                    Log.d(Constants.DEBUG_TAG, "Couldn't sign out, didn't receive an HTTP success code.");
+                }
+            }, StateManager.getInstance().getUser().getAcessToken()
+        ).execute(Constants.LOGOUT_URL);
+    }
+
+    private void performPostLogoutActions() {
+        // Clear the authentication manager(s)
+        StateManager.getInstance().setUser(null);
+        LoginManager.getInstance().clearAuthenticationInfo(this);
+
+        // Delete cached information
+        new File(getFilesDir().getPath() + "/" + Constants.STORAGE_DASHBOARD_FILENAME).delete();
+        new File(getFilesDir().getPath() + "/" + Constants.STORAGE_ELDER_PROFILE_PICTURE_FILENAME).delete();
+
+        // Redirect to the login activity
+        startActivity(new Intent(this, LoginActivity.class));
+        finish();
+    }
+
+    private void bindViewsAndActions() {
+        actionBar = getSupportActionBar();
+        bottomNav = findViewById(R.id.bnv_logged_in_navigation);
+        bottomNav.setOnNavigationItemSelectedListener(navItemClickListener);
+    }
+
+    //region Helper methods
+    /**
+     * Tries to find a fragment by its tag and checks if it's visible
+     * @param tag
+     * @return true is the fragment is being shown, otherwise false
+     */
+    private boolean isCurrentFragment(String tag) {
+        final Fragment f = fragmentManager.findFragmentByTag(tag);
+        return f != null && f.isVisible();
+    }
+
+    /**
+     * Checks if the fragment back stack is empty
+     * @return true is the back stack is empty, otherwise false
+     */
+    private boolean isFragmentBackStackEmpty() {
+        return fragmentManager.getBackStackEntryCount() == 0;
+    }
+
+    /**
+     * Checks is the given tag corresponds to a fragment that's on the top of the back stack,
+     * meaning that it was the previous fragment being shown
+     * @param tag
+     * @return true if the tag is on the top of the stack, otherwise false
+     */
+    private boolean isFragmentOnTopOfBackStack(String tag) {
+        final int entryCount = fragmentManager.getBackStackEntryCount();
+        return entryCount > 0 && fragmentManager
+                .getBackStackEntryAt(entryCount - 1).getName().equals(tag);
+    }
+
+    /**
+     * Checks is the given tag corresponds to a fragment that's on the back stack
+     * @param tag
+     * @return true if the tab is found on the back stack
+     */
+    private boolean isFragmentOnBackStack(String tag) {
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
+            final String name = fragmentManager.getBackStackEntryAt(i).getName();
+            if (name != null && name.equals(tag)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the tag (class name) of the fragment on top of the back stack
+     * @return string tag of the fragment
+     */
+    private String getTopFragmentTagFromBackStack() {
+        return isFragmentBackStackEmpty() ? null :
+                fragmentManager.getBackStackEntryAt(
+                        fragmentManager.getBackStackEntryCount() - 1
+                ).getName();
+    }
+
+    /**
+     * Prints the fragment back stack to the log console
+     */
+    private void printBackStack() {
+        Log.d(Constants.DEBUG_TAG, "Current fragment back stack:");
+        for (int i = 0; i < fragmentManager.getBackStackEntryCount(); i++) {
+            final FragmentManager.BackStackEntry entry = fragmentManager.getBackStackEntryAt(i);
+            Log.d(Constants.DEBUG_TAG, String.format("%d [%d]: %s", i, entry.getId(), entry.getName()));
+        }
+        Log.d(Constants.DEBUG_TAG, "\n");
+    }
+    //endregion
 }

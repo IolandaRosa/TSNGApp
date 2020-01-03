@@ -57,7 +57,7 @@ public class User implements Parcelable {
         return acessToken;
     }
 
-    public void setAcessToken(String acessToken) {
+    public void setAccessToken(String acessToken) {
         this.acessToken = acessToken;
     }
 

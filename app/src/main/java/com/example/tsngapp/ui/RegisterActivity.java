@@ -48,6 +48,8 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         this.nameEditText = findViewById(R.id.registerNameEditText);
         this.emailEditText = findViewById(R.id.registerEmailEditText);
         this.elderNameEditText = findViewById(R.id.registerElderNameEditText);
@@ -58,6 +60,13 @@ public class RegisterActivity extends AppCompatActivity {
         this.passwordConfEditText = findViewById(R.id.registerPasswordConfEditText);
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
+
+
 
     public void register(View view) {
 
@@ -174,10 +183,12 @@ public class RegisterActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if (item.getItemId() == R.id.action_login) {
-            setupLoginActivity();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+            case R.id.action_login:
+                setupLoginActivity();
         }
-
         return true;
     }
 

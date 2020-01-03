@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -17,6 +20,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.tsngapp.R;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.ErrorCode;
@@ -43,9 +47,11 @@ public class LoginActivity extends AppCompatActivity {
     private User user;
     private LinearLayout progress_Layout;
     private TextView progressaLayoutTextView;
+    private TextView tvNoAccountBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -55,11 +61,28 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
+        findViewById(R.id.loginBtn).setOnClickListener(v -> startLogin());
 
-        this.usernameEditText = findViewById(R.id.registerNameEditText);
-        this.passwordEditText = findViewById(R.id.registerUsernameEditText);
+        this.usernameEditText = findViewById(R.id.et_email_login);
+        this.passwordEditText = findViewById(R.id.et_password_login);
         this.progress_Layout = findViewById(R.id.progress_layout);
         this.progressaLayoutTextView = findViewById(R.id.progressLayoutTextView);
+        this.tvNoAccountBtn = findViewById(R.id.tv_no_account_button);
+
+        this.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                startLogin();
+                return true;
+            }
+            // Return true if you have consumed the action, else false.
+            return false;
+        });
+
+
+        tvNoAccountBtn.setOnClickListener(v -> {
+            startActivityForResult(new Intent(LoginActivity.this, RegisterActivity.class),
+                    Constants.REGISTER_ACTIVITY_CODE);
+        });
 
         //Ve se token ainda esta valido para autenticação
         String token = LoginManager.getInstance().retrieveAuthToken(this);
@@ -108,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public void loginButtonClicked(View view) {
+    private void startLogin() {
         //Esconde o teclado
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -154,9 +177,6 @@ public class LoginActivity extends AppCompatActivity {
 
             String token = LoginManager.getInstance().getTokenFromJson(jsonString);
 
-            //Grava token nas shared preferences
-            LoginManager.getInstance().saveAuthToken(token, LoginActivity.this);
-
             //Vai buscar a informação do utilizador e do elder e continua o login
             performPostAuthenticationActions(token);
         });
@@ -168,12 +188,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void performPostAuthenticationActions(String token) {
         getUserInfo(token, user -> {
-            user.setAcessToken(token);
+            user.setAccessToken(token);
             getElderInfo(user.getId(), token,
-                    elder -> {
-                        redirectLoggedIn(user, elder);
-                    },
-                    e -> handleLoginFailed("Couldn't get elder, " + e.getMessage())
+                elder -> {
+                    StateManager.getInstance()
+                            .setUser(user)
+                            .setElder(elder);
+                    LoginManager.getInstance()
+                            .saveAuthInfo(token, user, elder, this);
+                    performPostLoginActions();
+                },
+                e -> handleLoginFailed("Couldn't get elder, " + e.getMessage())
             );
         }, this::handleLoginFailed);
     }
@@ -203,18 +228,10 @@ public class LoginActivity extends AppCompatActivity {
         new SMARTAAL.ElderInfo(userId, token, resultListener, failureListener).execute();
     }
 
-    private void redirectLoggedIn(User user, Elder elder) {
-        Bundle bundle = new Bundle();
-        bundle.putParcelable(Constants.INTENT_USER_KEY, user);
-        bundle.putParcelable(Constants.INTENT_ELDER_KEY, elder);
-
-        Intent i = new Intent(this, LoggedInActivity.class);
-
-        i.putExtras(bundle);
-
-        //vai para pagina inicial da aplicação
-        startActivity(i);
-        this.finish();
+    private void performPostLoginActions() {
+        // Redirect to the LoggedInActivity
+        startActivity(new Intent(this, LoggedInActivity.class));
+        finish();
     }
 
     private void handleLoginFailed(Exception e) {

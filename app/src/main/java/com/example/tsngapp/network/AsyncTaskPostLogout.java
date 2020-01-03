@@ -62,7 +62,7 @@ public class AsyncTaskPostLogout extends AsyncTask<String, Integer, String> {
     protected void onPostExecute(String result) {
         super.onPostExecute(result);
 
-        if(result != null){
+        if (result != null){
             listener.onTaskDone(result);
         }
     }

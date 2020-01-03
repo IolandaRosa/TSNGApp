@@ -2,6 +2,8 @@ package com.example.tsngapp.network;
 
 import android.util.Log;
 
+import com.example.tsngapp.helpers.Constants;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,6 +34,8 @@ public class HTTPGETRequest {
         try {
             conn = (HttpURLConnection) new URL(targetURL).openConnection();
             conn.setRequestMethod("GET");
+            conn.setReadTimeout(Constants.REQUEST_READ_TIMEOUT);
+            conn.setConnectTimeout(Constants.REQUEST_CONNECT_TIMEOUT);
             conn.setRequestProperty("Authorization", "Bearer " + token);
             conn.connect();
 

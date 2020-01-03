@@ -28,7 +28,7 @@ public abstract class AsyncTaskRequest<T> extends AsyncTask<Void, Void, AsyncTas
     protected AsyncTaskResult<T> doInBackground(Void... voids) {
         try {
             return request();
-        } catch (IOException | JSONException | ParseException e) {
+        } catch (Exception e) {
             return new AsyncTaskResult<>(e);
         }
     }
@@ -42,5 +42,5 @@ public abstract class AsyncTaskRequest<T> extends AsyncTask<Void, Void, AsyncTas
         }
     }
 
-    protected abstract AsyncTaskResult<T> request() throws IOException, JSONException, ParseException;
+    protected abstract AsyncTaskResult<T> request() throws JSONException, ParseException;
 }

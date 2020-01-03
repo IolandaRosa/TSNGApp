@@ -19,6 +19,7 @@ import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.chart.DateTimeAxisFormatter;
@@ -44,16 +45,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ElectricalCurrentStateFragment extends BaseNestedFragment {
-
-    private static final String PARAM_USER = "ElectricalCurrentStateFragment.PARAM_USER";
-    private static final String PARAM_ELDER = "ElectricalCurrentStateFragment.PARAM_ELDER";
+public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
     private final String HOUR = "hour";
     private final String DAY = "day";
     private final String MONTH = "month";
 
     private User user;
-    private Elder elder;
+    // private Elder elder;
     private String time;
     private Button btnHour;
     private Button btnDay;
@@ -68,22 +66,11 @@ public class ElectricalCurrentStateFragment extends BaseNestedFragment {
         timesDiff = new HashMap<>();
     }
 
-    public static ElectricalCurrentStateFragment newInstance(User user, Elder elder) {
-        ElectricalCurrentStateFragment fragment = new ElectricalCurrentStateFragment();
-        Bundle args = new Bundle();
-        args.putParcelable(PARAM_USER, user);
-        args.putParcelable(PARAM_ELDER, elder);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            this.user = getArguments().getParcelable(PARAM_USER);
-            this.elder = getArguments().getParcelable(PARAM_ELDER);
-        }
+
+        this.user = StateManager.getInstance().getUser();
 
         this.currentEntries = new LinkedList<>();
 
@@ -133,17 +120,12 @@ public class ElectricalCurrentStateFragment extends BaseNestedFragment {
             }
         });
 
-        return rootView;
-    }
-
-    @Override
-    protected void onCreateViewPostActions(@NonNull LayoutInflater inflater,
-                                           @Nullable ViewGroup container,
-                                           @Nullable Bundle savedInstanceState) {
         rootView.findViewById(R.id.btn_go_back)
-                .setOnClickListener(v -> {
-                    parentListener.onBackToMenuPressed();
-                });
+                .setOnClickListener(
+                        v -> parentListener.onBackToMenuPressed()
+                );
+
+        return rootView;
     }
 
     private void initializeDataset() {
@@ -248,6 +230,11 @@ public class ElectricalCurrentStateFragment extends BaseNestedFragment {
 
     private Long setTimeValue (Date date) {
         return date.getTime();
+    }
+
+    @Override
+    protected void onCreateViewPostActions(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
     }
 
     /*private void bindSockets() {

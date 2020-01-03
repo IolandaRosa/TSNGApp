@@ -1,5 +1,7 @@
 package com.example.tsngapp.view_managers;
 
+import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DateUtil;
 import com.example.tsngapp.helpers.ErrorCode;
 import com.example.tsngapp.helpers.ErrorValidator;
 import com.example.tsngapp.model.DataToSend;
@@ -38,9 +40,8 @@ public class RegisterManager {
             dataToSend.addErrorCode(ErrorCode.ELDER_BIRTH_DATE_EMPTY);
         }
         else{
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             try{
-                Date convertedDate = dateFormat.parse(elderBirthDate);
+                Date convertedDate = DateUtil.getDateFromString(elderBirthDate, Constants.SHORT_DATE_FORMAT);
 
                 Date actualDate = new Date();
 
@@ -71,9 +72,7 @@ public class RegisterManager {
         try {
             dataToSend.getJsonObject().put("name", elderName);
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-
-            Date convertedDate = dateFormat.parse(elderBirthDate);
+            Date convertedDate = DateUtil.getDateFromString(elderBirthDate, Constants.SHORT_DATE_FORMAT);
 
             dataToSend.getJsonObject().put("birth_date", convertedDate.toString());
 

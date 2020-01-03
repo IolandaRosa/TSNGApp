@@ -5,6 +5,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DateUtil;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,44 +56,54 @@ public class Elder implements Parcelable {
         return id;
     }
 
+    public Elder setId(int id) {
+        this.id = id;
+        return this;
+    }
+
     public int getTreaterId() {
         return treaterId;
+    }
+
+    public Elder setTreaterId(int treaterId) {
+        this.treaterId = treaterId;
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
+    public Elder setName(String name) {
+        this.name = name;
+        return this;
+    }
+
     public Date getBirthDate() {
         return birthDate;
+    }
+
+    public Elder setBirthDate(Date birthDate) {
+        this.birthDate = birthDate;
+        return this;
+    }
+
+    public UserGender getGender() {
+        return gender;
+    }
+
+    public Elder setGender(UserGender gender) {
+        this.gender = gender;
+        return this;
     }
 
     public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public void setTreaterId(int treaterId) {
-        this.treaterId = treaterId;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
-    }
-
-    public void setGender(UserGender gender) {
-        this.gender = gender;
-    }
-
-    public void setPhotoUrl(String photoUrl) {
+    public Elder setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+        return this;
     }
 
     @Override
@@ -113,8 +124,8 @@ public class Elder implements Parcelable {
     @SuppressLint("SimpleDateFormat")
     public static Elder fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
         final String dateString = jsonObject.getString("birth_date");
-        final Date birthDate = new SimpleDateFormat("yyyy-MM-dd").parse(dateString);
-        final UserGender gender = UserGender.valueOfAbreviature(jsonObject.getString("gender"));
+        final Date birthDate = DateUtil.getDateFromString(dateString, Constants.SHORT_DATE_FORMAT);
+        final UserGender gender = UserGender.valueOfAbbreviation(jsonObject.getString("gender"));
 
         return new Elder(jsonObject.getInt("id"),
                 jsonObject.getInt("treater_id"),
