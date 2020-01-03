@@ -31,6 +31,7 @@ public class Constants {
     public static final String BED_LAST_VALUES_URL = BASE_API_URL + "bed/%d/lastValues/%d";
     public static final String INTERNAL_TEMP_LAST_VALUES_URL = BASE_API_URL + "internaltemp/%d/lastValues/%d";
     public static final String ELECTRICAL_CURRENT_LAST_VALUES_URL = BASE_API_URL + "current/%d/lastValues/%d";
+    public static final String CURRENT_SENSOR_VALUES_CHART = BASE_API_URL + "correntSensorValuesChart";
 
     public static final Integer CURRENT_CHART_MAX_VALUES = 5;
     public static final Integer TEMPERATURE_CHART_MAX_VALUES = 5;

@@ -12,14 +12,60 @@
         android:layout_height="wrap_content"
         style="@style/StateMenuBackButton"/>
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/buttonLayout"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/btn_go_back"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:text="Current state fragment"
-        android:gravity="center"/>
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="0dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonHour"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#424242"
+            android:elevation="10dp"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_hour" />
+
+        <Button
+            android:id="@+id/buttonDay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:backgroundTint="#424242"
+            android:elevation="10dp"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_day" />
+
+        <Button
+            android:id="@+id/buttonMonth"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#424242"
+            android:elevation="10dp"
+            android:stateListAnimator="@null"
+            android:text="@string/btn_month" />
+    </LinearLayout>
+
+    <include
+        android:id="@+id/chart_electricalCurrentView"
+        layout="@layout/chart_electrical_temp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/buttonLayout"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="12dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="12dp" />
 
 </RelativeLayout>

@@ -55,7 +55,7 @@ public class LoggedInActivity extends AppCompatActivity implements
 
         profileFragment = ProfileFragment.newInstance(user, elder);
         profileFragment.setActionListener(this);
-        stateFragment = new StateFragment();
+        stateFragment = StateFragment.newInstance(user, elder);
         dashboardFragment = DashboardFragment.newInstance(user);
         fragmentManager
                 .beginTransaction()

@@ -8,6 +8,7 @@ import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.network.AsyncTaskRequest;
 import com.example.tsngapp.network.AsyncTaskResult;
 import com.example.tsngapp.network.HTTPGETRequest;
+import com.example.tsngapp.network.HTTPPOSTRequest;
 import com.example.tsngapp.network.OnFailureListener;
 import com.example.tsngapp.network.OnResultListener;
 
@@ -15,6 +16,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -204,11 +206,11 @@ public class SMARTAAL {
     public static class InternalTempLastValues extends AsyncTaskRequest<List<InternalTempLastValues.Data>> {
         public static class Data extends SimpleValueSensor {
             public Data(String sensorId, float value, Date date) {
-                super(sensorId, value, date);
+                super(value, date);
             }
 
             public Data(String sensorId, float value, String strDate) throws ParseException {
-                super(sensorId, value, strDate);
+                super(value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
@@ -302,24 +304,82 @@ public class SMARTAAL {
         }
     }
 
-    public static class CurrentLastValues extends AsyncTaskRequest<List<CurrentLastValues.Data>> {
+    public static  class CurrentSensorValues extends AsyncTaskRequest<List<CurrentSensorValues.Data>> {
+        private JSONObject dataToSend;
+        private static String time;
+
         public static class Data extends SimpleValueSensor {
-            public Data(String sensorId, float value, Date date) {
-                super(sensorId, value, date);
+            public Data(float value, Date date) {
+                super(value, date);
             }
 
-            public Data(String sensorId, float value, String strDate) throws ParseException {
-                super(sensorId, value, strDate);
+            public Data(float value, String strDate) throws ParseException {
+                super(value, strDate);
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            public static CurrentSensorValues.Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final String dateString = jsonObject.getString("date");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm");
+
+                if(time.equals("day")){
+                    dateFormat = new SimpleDateFormat("yyyy-MM-dd hh");
+                }
+
+                if(time.equals("month")){
+                    dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                }
+                final Date date = dateFormat.parse(dateString);
+
+                return new CurrentSensorValues.Data(
+                        Float.valueOf(jsonObject.getString("value")), date);
+            }
+        }
+
+
+        public CurrentSensorValues(String token, OnResultListener<List<Data>> resultListener, OnFailureListener failureListener, JSONObject dataToSend, String time) {
+            super(token, Constants.CURRENT_SENSOR_VALUES_CHART, resultListener, failureListener);
+            this.dataToSend = dataToSend;
+            this.time = time;
+
+        }
+
+        @Override
+        protected AsyncTaskResult<List<Data>> request() throws IOException, JSONException, ParseException {
+            HTTPPOSTRequest request = new HTTPPOSTRequest(token, url, dataToSend);
+
+            String response = request.execute();
+
+            JSONObject jsonResponse = new JSONObject(response);
+            JSONArray data = jsonResponse.getJSONArray("data");
+
+            List<Data> sensorDataList = new ArrayList<>();
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject obj = data.getJSONObject(i);
+                Data sensorData = Data.fromJSON(obj);
+                sensorDataList.add(sensorData);
+            }
+
+            return new AsyncTaskResult<>(sensorDataList);
+        }
+    }
+
+    public static class CurrentLastValues extends AsyncTaskRequest<List<CurrentLastValues.Data>> {
+        public static class Data extends SimpleValueSensor {
+            public Data(float value, Date date) {
+                super(value, date);
+            }
+
+            public Data(float value, String strDate) throws ParseException {
+                super(value, strDate);
             }
 
             @SuppressLint("SimpleDateFormat")
             public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
                 final String dateString = jsonObject.getString("date");
                 final Date date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(dateString);
-                final Integer sensorId = jsonObject.has("corrent_sensor_id") ?
-                        jsonObject.getInt("corrent_sensor_id") : null;
 
-                return new Data(String.valueOf(sensorId),
+                return new Data(
                         Float.valueOf(jsonObject.getString("value")), date);
             }
         }

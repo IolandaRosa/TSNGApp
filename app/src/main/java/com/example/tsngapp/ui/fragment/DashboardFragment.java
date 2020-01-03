@@ -121,7 +121,6 @@ public class DashboardFragment extends BaseFragment {
                     if (arr.get(0).equals(user.getElder_id())) {
                         final SMARTAAL.CurrentLastValues.Data sensorData =
                                 new SMARTAAL.CurrentLastValues.Data(
-                                    null,
                                     arr.getInt(1),
                                     arr.getString(2)
                                 );

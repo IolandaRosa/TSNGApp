@@ -1,32 +1,57 @@
 package com.example.tsngapp.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
-
 import com.example.tsngapp.R;
+import com.example.tsngapp.model.Elder;
+import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.fragment.listener.StateMenuFragmentActionListener;
+
 
 /**
  * Fragment for the house and elder detailed state
  */
 public class StateFragment extends BaseFragment
-    implements StateMenuFragment.FragmentActionListener,
+        implements StateMenuFragment.FragmentActionListener,
         StateMenuFragmentActionListener {
 
+    private static final String PARAM_USER = "StateFragment.PARAM_USER";
+    private static final String PARAM_ELDER = "StateFragment.PARAM_ELDER";
+
     private FragmentManager fragmentManager;
+    private User user;
+    private Elder elder;
+
+
+    public StateFragment() {
+    }
+
+    public static StateFragment newInstance(User user, Elder elder) {
+        StateFragment fragment = new StateFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(PARAM_USER, user);
+        args.putParcelable(PARAM_ELDER, elder);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        if (getArguments() != null) {
+            this.user = getArguments().getParcelable(PARAM_USER);
+            this.elder = getArguments().getParcelable(PARAM_ELDER);
+        }
+    }
 
     @Override
     protected void onCreateViewActions(@NonNull LayoutInflater inflater,
@@ -42,8 +67,7 @@ public class StateFragment extends BaseFragment
     }
 
     private void loadFragment(Fragment fragment) {
-        // TODO: Fix back presses
-
+        // TODO: Fix back pressed
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
@@ -52,12 +76,11 @@ public class StateFragment extends BaseFragment
     }
 
 
-
     @Override
     public void onMenuItemClicked(StateMenuFragment.MenuItem item) {
         switch (item) {
             case CURRENT:
-                loadFragment(new ElectricalCurrentStateFragment());
+                loadFragment(ElectricalCurrentStateFragment.newInstance(user, elder));
                 break;
             default:
                 loadFragment(new StateMenuFragment());
