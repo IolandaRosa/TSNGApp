@@ -34,7 +34,8 @@
         <activity
             android:name=".ui.LoginActivity"
             android:configChanges="orientation|screenSize"
-            android:screenOrientation="locked" />
+            android:screenOrientation="locked"
+            android:windowSoftInputMode="stateVisible|adjustResize"/>
     </application>
 
 </manifest>

@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -59,13 +61,22 @@ public class LoginActivity extends AppCompatActivity {
             return;
         }
 
-        findViewById(R.id.loginBtn).setOnClickListener(loginButtonClicked);
+        findViewById(R.id.loginBtn).setOnClickListener(v -> startLogin());
 
         this.usernameEditText = findViewById(R.id.et_email_login);
         this.passwordEditText = findViewById(R.id.et_password_login);
         this.progress_Layout = findViewById(R.id.progress_layout);
         this.progressaLayoutTextView = findViewById(R.id.progressLayoutTextView);
         this.tvNoAccountBtn = findViewById(R.id.tv_no_account_button);
+
+        this.passwordEditText.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                startLogin();
+                return true;
+            }
+            // Return true if you have consumed the action, else false.
+            return false;
+        });
 
 
         tvNoAccountBtn.setOnClickListener(v -> {
@@ -120,7 +131,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private View.OnClickListener loginButtonClicked = v -> {
+    private void startLogin() {
         //Esconde o teclado
         try {
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
@@ -134,7 +145,7 @@ public class LoginActivity extends AppCompatActivity {
         String password = passwordEditText.getText().toString().trim();
 
         prepareLogin(username, password);
-    };
+    }
 
     private void prepareLogin(String username, String password) {
         final DataToSend dataToSend = LoginManager.getInstance().generateJsonForPost(username, password);
