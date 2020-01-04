@@ -127,12 +127,15 @@ public class LoggedInActivity extends AppCompatActivity implements
         if (className != null && className.equals(ProfileFragment.class.getName())) {
             bottomNav.getMenu().getItem(PROFILE_MENU_ITEM_POSITION).setChecked(true);
             actionBar.setTitle(R.string.label_profile);
+            actionBar.setSubtitle(null);
         } else if (className != null && className.equals(StateFragment.class.getName())) {
             bottomNav.getMenu().getItem(STATE_MENU_ITEM_POSITION).setChecked(true);
             actionBar.setTitle(R.string.label_house_state);
+            actionBar.setSubtitle(null);
         } else {
             bottomNav.getMenu().getItem(DASHBOARD_MENU_ITEM_POSITION).setChecked(true);
             actionBar.setTitle(R.string.label_home);
+            actionBar.setSubtitle(null);
         }
     }
 
@@ -165,6 +168,7 @@ public class LoggedInActivity extends AppCompatActivity implements
 
     private void loadFragment(String title, Fragment fragment, boolean addToBackStack) {
         actionBar.setTitle(title);
+        actionBar.setSubtitle(null);
 
         final String tag = fragment.getClass().getName();
         if (isCurrentFragment(tag)) {

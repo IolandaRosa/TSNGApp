@@ -13,6 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.annimon.stream.Stream;
 import com.example.tsngapp.BuildConfig;
@@ -49,12 +50,11 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
 
     private User user;
     // private Elder elder;
-    private String time;
-    private Button btnHour;
-    private Button btnDay;
-    private Button btnMonth;
     private View currentChartView;
     private LineChart chartElectricalCurrent;
+    private SwipeRefreshLayout refreshLayout;
+
+    private String time;
     private List<Entry> currentEntries;
     private int chartColor;
     private HashMap<Float, Long> timesDiff;
@@ -70,32 +70,24 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
                                            @Nullable ViewGroup container,
                                            @Nullable Bundle savedInstanceState) {
 
+        this.time = HOUR;
         this.user = StateManager.getInstance().getUser();
         this.currentEntries = new LinkedList<>();
-        this.time = HOUR;
 
-        this.btnHour = rootView.findViewById(R.id.buttonHour);
-        this.btnDay = rootView.findViewById(R.id.buttonDay);
-        this.btnMonth = rootView.findViewById(R.id.buttonMonth);
+        Button btnHour = rootView.findViewById(R.id.buttonHour);
+        Button btnDay = rootView.findViewById(R.id.buttonDay);
+        Button btnMonth = rootView.findViewById(R.id.buttonMonth);
         this.currentChartView = rootView.findViewById(R.id.chart_electricalCurrentView);
         this.chartElectricalCurrent = currentChartView.findViewById(R.id.chart_electricalCurrent);
 
+        refreshLayout = rootView.findViewById(R.id.srl);
+        refreshLayout.setOnRefreshListener(this::initializeDataset);
+
         this.chartColor = ContextCompat.getColor(rootView.getContext(), R.color.md_blue_A700);
 
-        btnHour.setOnClickListener(view -> {
-            time = HOUR;
-            initializeDataset();
-        });
-
-        btnDay.setOnClickListener(view -> {
-            time = DAY;
-            initializeDataset();
-        });
-
-        btnMonth.setOnClickListener(view -> {
-            time = MONTH;
-            initializeDataset();
-        });
+        btnHour.setOnClickListener(view -> initializeDataset(HOUR));
+        btnDay.setOnClickListener(view -> initializeDataset(DAY));
+        btnMonth.setOnClickListener(view -> initializeDataset(MONTH));
 
         rootView.findViewById(R.id.btn_go_back)
                 .setOnClickListener(v -> parentListener.onBackToMenuPressed());
@@ -137,6 +129,19 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
     }
 
     private void initializeDataset() {
+        this.initializeDataset(null);
+    }
+
+    private void initializeDataset(String newTime) {
+        if (newTime != null) {
+            if (this.time.equals(newTime)) {
+                return;
+            }
+            this.time = newTime;
+        }
+
+        refreshLayout.setRefreshing(true);
+
         JSONObject userObject = new JSONObject();
         JSONObject dataToSend = new JSONObject();
         currentEntries = new LinkedList<>();
@@ -154,13 +159,21 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
 
         } catch (JSONException e) {
             e.printStackTrace();
+            refreshLayout.setRefreshing(false);
         }
 
         SMARTAAL.CurrentSensorValues getCurrentSensorValues = new SMARTAAL.CurrentSensorValues(
                 user.getAcessToken(),
-                values -> addLineChartEntries(values),
-                e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show(),
-                dataToSend, time);
+                values -> {
+                    addLineChartEntries(values);
+                    refreshLayout.setRefreshing(false);
+                },
+                e -> {
+                    Toast.makeText(getContext(), "Failed to load current sensor data: " +
+                            e.getMessage(), Toast.LENGTH_LONG).show();
+                    refreshLayout.setRefreshing(false);
+                },
+                dataToSend, this.time);
 
         getCurrentSensorValues.execute();
     }
@@ -186,7 +199,7 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
         XAxis xAxis = chartElectricalCurrent.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
 
-        xAxis.setValueFormatter(new DateTimeAxisFormatter(time, timesDiff));
+        xAxis.setValueFormatter(new DateTimeAxisFormatter(this.time, timesDiff));
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(Color.BLACK);
     }
