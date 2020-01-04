@@ -1,7 +1,8 @@
 package com.example.tsngapp.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,12 +10,6 @@ import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
 
 import com.example.tsngapp.R;
 import com.example.tsngapp.model.Elder;
@@ -53,8 +48,6 @@ public class StateFragment extends BaseFragment
     }
 
     private void loadFragment(Fragment fragment, @StringRes Integer title) {
-        // TODO: Fix back presses
-
         FragmentTransaction transaction = fragmentManager
                 .beginTransaction()
                 .setCustomAnimations(R.anim.anim_fade_in, R.anim.anim_fade_out)
@@ -62,6 +55,7 @@ public class StateFragment extends BaseFragment
         transaction.commit();
         actionListener.setTitleFromFragment(title);
     }
+
 
     private void loadFragment(Fragment fragment) {
         loadFragment(fragment, null);

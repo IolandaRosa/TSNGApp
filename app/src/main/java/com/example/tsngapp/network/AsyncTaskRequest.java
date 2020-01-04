@@ -42,5 +42,5 @@ public abstract class AsyncTaskRequest<T> extends AsyncTask<Void, Void, AsyncTas
         }
     }
 
-    protected abstract AsyncTaskResult<T> request();
+    protected abstract AsyncTaskResult<T> request() throws JSONException, ParseException;
 }

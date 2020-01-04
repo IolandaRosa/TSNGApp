@@ -26,7 +26,7 @@ public class StateMenuFragment extends BaseFragment {
         BED (R.id.menu_item_bed, R.string.label_bed_state),
         DOOR (R.id.menu_item_door, R.string.label_door_state),
         DIVISIONS (R.id.menu_item_divisions, R.string.label_division_state),
-        INTERNAL_TEMP (R.id.menu_item_internal_temp, R.string.label_internal_temp_state),
+        // INTERNAL_TEMP (R.id.menu_item_internal_temp, R.string.label_internal_temp_state),
         WINDOWS (R.id.menu_item_windows, R.string.label_window_state),
         LIGHTS (R.id.menu_item_lights, R.string.label_lights_state),
         SOS (R.id.menu_item_sos, R.string.label_sos_state);

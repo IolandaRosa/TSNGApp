@@ -40,13 +40,13 @@
         app:menuLabel="@string/label_division_state"
         app:showDivider="true" />
 
-    <com.example.tsngapp.ui.view.StateMenuItem
+    <!--<com.example.tsngapp.ui.view.StateMenuItem
         android:id="@+id/menu_item_internal_temp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:menuIcon="@drawable/ic_mdi_thermometer_black_24dp"
         app:menuLabel="@string/label_internal_temp_state"
-        app:showDivider="true" />
+        app:showDivider="true" />-->
 
     <com.example.tsngapp.ui.view.StateMenuItem
         android:id="@+id/menu_item_windows"

@@ -5,10 +5,7 @@ import android.annotation.SuppressLint;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DateUtil;
 import com.github.mikephil.charting.components.AxisBase;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
-import com.github.mikephil.charting.utils.ViewPortHandler;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

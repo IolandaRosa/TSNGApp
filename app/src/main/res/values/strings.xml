@@ -60,6 +60,9 @@
     <string name="label_lights_state">House lights</string>
     <string name="label_sos_state">SOS button</string>
     <string name="state_menu_back">Go back to the main menu</string>
+    <string name="btn_hour">Hour</string>
+    <string name="btn_day">Day</string>
+    <string name="btn_month">Month</string>
     <string name="label_entered">Entered</string>
     <string name="label_left">Left</string>
     <string name="label_electrical_current">Electrical current</string>
