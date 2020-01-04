@@ -20,7 +20,6 @@ import com.example.tsngapp.R;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.StateManager;
-import com.example.tsngapp.model.Elder;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.chart.DateTimeAxisFormatter;
 import com.github.mikephil.charting.charts.LineChart;
@@ -32,13 +31,11 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
-import com.pusher.client.channel.SubscriptionEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -62,70 +59,81 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
     private int chartColor;
     private HashMap<Float, Long> timesDiff;
 
+    private Pusher pusher;
+
     public ElectricalCurrentStateFragment() {
         timesDiff = new HashMap<>();
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreateViewPostActions(@NonNull LayoutInflater inflater,
+                                           @Nullable ViewGroup container,
+                                           @Nullable Bundle savedInstanceState) {
 
         this.user = StateManager.getInstance().getUser();
-
         this.currentEntries = new LinkedList<>();
-
         this.time = HOUR;
 
-        initializeDataset();
-       //bindSockets();
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-
-        View rootView = inflater.inflate(R.layout.fragment_electrical_current_state, container, false);
         this.btnHour = rootView.findViewById(R.id.buttonHour);
         this.btnDay = rootView.findViewById(R.id.buttonDay);
         this.btnMonth = rootView.findViewById(R.id.buttonMonth);
-
         this.currentChartView = rootView.findViewById(R.id.chart_electricalCurrentView);
-
         this.chartElectricalCurrent = currentChartView.findViewById(R.id.chart_electricalCurrent);
 
         this.chartColor = ContextCompat.getColor(rootView.getContext(), R.color.md_blue_A700);
 
-        btnHour.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                time = HOUR;
-                initializeDataset();
-            }
+        btnHour.setOnClickListener(view -> {
+            time = HOUR;
+            initializeDataset();
         });
 
-        btnDay.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                time = DAY;
-                initializeDataset();
-            }
+        btnDay.setOnClickListener(view -> {
+            time = DAY;
+            initializeDataset();
         });
 
-        btnMonth.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                time = MONTH;
-                initializeDataset();
-            }
+        btnMonth.setOnClickListener(view -> {
+            time = MONTH;
+            initializeDataset();
         });
 
         rootView.findViewById(R.id.btn_go_back)
-                .setOnClickListener(
-                        v -> parentListener.onBackToMenuPressed()
-                );
+                .setOnClickListener(v -> parentListener.onBackToMenuPressed());
 
-        return rootView;
+        initializeChart();
+        initializeDataset();
+        bindSockets();
+    }
+
+    @Override
+    protected int getLayoutResourceId() {
+        return R.layout.fragment_electrical_current_state;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (pusher != null) {
+            pusher.connect();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (pusher != null) {
+            pusher.disconnect();
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (pusher != null) {
+            pusher.unsubscribe(Constants.Pusher.CHANNEL_CURRENT_HOUR_VALUE);
+            pusher.unsubscribe(Constants.Pusher.CHANNEL_CURRENT_DAY_VALUE);
+            pusher.unsubscribe(Constants.Pusher.CHANNEL_CURRENT_MONT_VALUE);
+        }
     }
 
     private void initializeDataset() {
@@ -152,19 +160,43 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
                 user.getAcessToken(),
                 values -> addLineChartEntries(values),
                 e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show(),
-                dataToSend,
-                time);
+                dataToSend, time);
 
         getCurrentSensorValues.execute();
     }
 
-    @Override
-    protected int getLayoutResourceId() {
-        return R.layout.fragment_electrical_current_state;
+    private void initializeChart() {
+        final TextView title = currentChartView.findViewById(R.id.current_time_chart_title);
+        title.setText(R.string.home_last_current_values);
+
+        chartElectricalCurrent.setNoDataText("Loading results...");
+        chartElectricalCurrent.setNoDataTextColor(Color.BLACK);
+        chartElectricalCurrent.setDragEnabled(true);
+        chartElectricalCurrent.setScaleEnabled(false);
+        chartElectricalCurrent.getLegend().setEnabled(false);
+        chartElectricalCurrent.getAxisRight().setEnabled(false);
+        chartElectricalCurrent.getDescription().setEnabled(false);
+
+        YAxis yAxis = chartElectricalCurrent.getAxisLeft();
+        yAxis.setAxisMinimum(0);
+        yAxis.setLabelCount(10);
+        yAxis.setDrawGridLines(true);
+        yAxis.setTextColor(Color.BLACK);
+
+        XAxis xAxis = chartElectricalCurrent.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+
+        xAxis.setValueFormatter(new DateTimeAxisFormatter(time, timesDiff));
+        xAxis.setDrawGridLines(false);
+        xAxis.setTextColor(Color.BLACK);
     }
 
     private void addLineChartEntries(List<SMARTAAL.CurrentSensorValues.Data> values) {
         int index = 0;
+
+        if (values.size() == 0) {
+            return;
+        }
 
         ArrayList<Long> times = new ArrayList<>();
 
@@ -180,9 +212,10 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
             currentEntries.add(new Entry(Float.parseFloat(String.valueOf(index)), v.getValue()));
         }
 
-        TextView title = currentChartView.findViewById(R.id.current_time_chart_title);
-        title.setText(R.string.home_last_current_values);
+        updateChart();
+    }
 
+    private void updateChart() {
         LineDataSet dataSet = new LineDataSet(currentEntries, "Label");
         dataSet.setColor(this.chartColor);
         dataSet.setValueTextColor(Color.BLACK);
@@ -197,32 +230,13 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
 
         LineData lineData = new LineData(dataSet);
         chartElectricalCurrent.setData(lineData);
-        chartElectricalCurrent.setNoDataText("Loading results...");
-        chartElectricalCurrent.setNoDataTextColor(Color.BLACK);
-        chartElectricalCurrent.setDragEnabled(true);
-        chartElectricalCurrent.setScaleEnabled(false);
-        chartElectricalCurrent.getLegend().setEnabled(false);
-        chartElectricalCurrent.getAxisRight().setEnabled(false);
-        chartElectricalCurrent.getDescription().setEnabled(false);
 
         float max = Stream.of(currentEntries)
                 .map(BaseEntry::getY)
                 .max(Float::compare)
                 .get();
 
-        YAxis yAxis = chartElectricalCurrent.getAxisLeft();
-        yAxis.setAxisMinimum(0);
-        yAxis.setLabelCount(10);
-        yAxis.setDrawGridLines(true);
-        yAxis.setTextColor(Color.BLACK);
-
-        XAxis xAxis = chartElectricalCurrent.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        yAxis.setAxisMaximum(max + (max / 2));
-
-        xAxis.setValueFormatter(new DateTimeAxisFormatter(time, timesDiff));
-        xAxis.setDrawGridLines(false);
-        xAxis.setTextColor(Color.BLACK);
+        chartElectricalCurrent.getAxisLeft().setAxisMaximum(max + (max / 2));
 
         chartElectricalCurrent.notifyDataSetChanged();
         chartElectricalCurrent.invalidate();
@@ -232,29 +246,36 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
         return date.getTime();
     }
 
-    @Override
-    protected void onCreateViewPostActions(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
-    }
-
-    /*private void bindSockets() {
+    private void bindSockets() {
         PusherOptions options = new PusherOptions();
         options.setCluster("eu");
-        Pusher pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
+        pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
 
         pusher
-                .subscribe(Constants.Pusher.CHANNEL_CURRENT)
-                .bind(Constants.Pusher.EVENT_NEW_CURRENT_VALUE, event -> {
-                    try {
-                       this.initializeDataset();
-                    } catch (Exception e) {
-                        Log.d(Constants.DEBUG_TAG, String.format(
-                                "Failed to parse %s EVENT from Pusher %s CHANNEL",
-                                Constants.Pusher.CHANNEL_CURRENT,
-                                Constants.Pusher.EVENT_NEW_CURRENT_VALUE));
-                    }
-                });
+            .subscribe(Constants.Pusher.CHANNEL_CURRENT_HOUR_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_CURRENT_HOUR_VALUES, event ->
+                    handleSocketEvent(Constants.Pusher.CHANNEL_CURRENT_HOUR_VALUE,
+                            Constants.Pusher.EVENT_NEW_CURRENT_HOUR_VALUES));
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_CURRENT_DAY_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_CURRENT_DAY_VALUES, event ->
+                    handleSocketEvent(Constants.Pusher.CHANNEL_CURRENT_DAY_VALUE,
+                            Constants.Pusher.EVENT_NEW_CURRENT_DAY_VALUES));
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_CURRENT_MONT_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_CURRENT_MONTH_VALUES, event ->
+                    handleSocketEvent(Constants.Pusher.CHANNEL_CURRENT_MONT_VALUE,
+                            Constants.Pusher.EVENT_NEW_CURRENT_MONTH_VALUES));
         pusher.connect();
-    }*/
+    }
+
+    private void handleSocketEvent(String event, String channel) {
+        try {
+            this.initializeDataset();
+        } catch (Exception e) {
+            Log.d(Constants.DEBUG_TAG, String.format(
+                    "Failed to parse %s EVENT from Pusher %s CHANNEL", event, channel));
+        }
+    }
 }
 

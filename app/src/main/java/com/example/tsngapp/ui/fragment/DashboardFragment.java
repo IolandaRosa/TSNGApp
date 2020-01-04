@@ -158,7 +158,7 @@ public class DashboardFragment extends BaseFragment {
                         final int id = StateManager.getInstance().getRng().nextInt(Constants.RNG_BOUND);
                         final SMARTAAL.CurrentLastValues.Data sensorData =
                                 new SMARTAAL.CurrentLastValues.Data(
-                                        id, arr.getInt(1), arr.getString(2));
+                                        id, (float) arr.getDouble(1), arr.getString(2));
                         addLineChartEntry(chartElectricalCurrent, currentChartEntries,
                                 CURRENT_CHART_MAX_VALUES, sensorData);
                         this.data.addCurrentValue(sensorData);
