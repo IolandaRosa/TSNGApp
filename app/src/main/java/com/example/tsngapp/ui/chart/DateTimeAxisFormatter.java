@@ -24,7 +24,7 @@ public class DateTimeAxisFormatter extends ValueFormatter {
         Long times = diffs.get(value);
 
         Date d = new Date();
-        SimpleDateFormat returnedDate = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat returnedDate = new SimpleDateFormat("HH:mm");
 
         if(time.equals("day")) {
             returnedDate = new SimpleDateFormat("dd,HH");
