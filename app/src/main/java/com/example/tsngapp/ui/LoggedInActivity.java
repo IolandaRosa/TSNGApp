@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
 import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.helpers.Constants;
@@ -25,6 +26,7 @@ import com.example.tsngapp.ui.fragment.StateFragment;
 import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.pusher.pushnotifications.PushNotifications;
 
 import java.io.File;
 
@@ -45,6 +47,9 @@ public class LoggedInActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
+
+        PushNotifications.start(getApplicationContext(), BuildConfig.PUSHER_BEAMS_INSTANCE_ID);
+        PushNotifications.addDeviceInterest(Constants.APP_TAG);
 
         // Try to restore data saved on Shared Preferences
         if (!StateManager.getInstance().isAuthenticationInfoLoaded()) {

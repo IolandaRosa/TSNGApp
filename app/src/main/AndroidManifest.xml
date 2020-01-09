@@ -37,5 +37,4 @@
             android:screenOrientation="locked"
             android:windowSoftInputMode="stateVisible|adjustResize"/>
     </application>
-
 </manifest>

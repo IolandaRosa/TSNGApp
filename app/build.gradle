@@ -16,6 +16,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "PUSHER_KEY", apiProperties['PUSHER_KEY'])
+        buildConfigField("String", "PUSHER_BEAMS_INSTANCE_ID", apiProperties['PUSHER_BEAMS_INSTANCE_ID'])
     }
     buildTypes {
         release {
@@ -50,6 +51,9 @@ dependencies {
     // Pusher
     implementation 'com.pusher:pusher-java-client:2.0.1'
     implementation 'com.pusher:push-notifications-android:1.4.0'
+    // Firebase
+    implementation 'com.google.firebase:firebase-core:17.2.1'
+    implementation 'com.google.firebase:firebase-messaging:20.1.0'
 }
 
-//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.gms.google-services'

@@ -12,10 +12,10 @@ public class Constants {
     public static final int REQUEST_CONNECT_TIMEOUT = 15000;
 
     //SHARED_PREFS
-    public static final String SHARED_PREFS_NAME = "TSNGApp";
-    public static final String SP_TOKEN_KEY = SHARED_PREFS_NAME + "_token";
-    public static final String SP_USER_KEY = SHARED_PREFS_NAME + "_user";
-    public static final String SP_ELDER_KEY = SHARED_PREFS_NAME + "_elder";
+    public static final String APP_TAG = "TSNGApp";
+    public static final String SP_TOKEN_KEY = APP_TAG + "_token";
+    public static final String SP_USER_KEY = APP_TAG + "_user";
+    public static final String SP_ELDER_KEY = APP_TAG + "_elder";
 
     //API
     private static final String BASE_URL = "http://smartaal.dei.estg.ipleiria.pt/";
@@ -87,8 +87,8 @@ public class Constants {
         public static final String EVENT_NEW_CURRENT_MONTH_VALUES = "App\\Events\\MonthGraphEvent";
     }
 
-    public static final String STORAGE_DASHBOARD_FILENAME = SHARED_PREFS_NAME + "_" + "Dashboard";
-    public static final String STORAGE_ELDER_PROFILE_PICTURE_FILENAME = SHARED_PREFS_NAME + "_" + "elderProfilePicture";
+    public static final String STORAGE_DASHBOARD_FILENAME = APP_TAG + "_" + "Dashboard";
+    public static final String STORAGE_ELDER_PROFILE_PICTURE_FILENAME = APP_TAG + "_" + "elderProfilePicture";
 
     public static final int RNG_BOUND = 1000000;
 }

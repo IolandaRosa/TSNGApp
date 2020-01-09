@@ -77,7 +77,7 @@ public class LoginManager {
      * @return LoginManager
      */
     public LoginManager saveAuthInfo(String token, User user, Elder elder, Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         final Gson gson = new Gson();
         sharedPreferences
                 .edit()
@@ -93,7 +93,7 @@ public class LoginManager {
      * @param context
      */
     public void clearAuthenticationInfo(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         sharedPreferences
                 .edit()
                 .remove(Constants.SP_TOKEN_KEY)
@@ -141,12 +141,12 @@ public class LoginManager {
      * @return
      */
     public String retrieveAuthToken(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         return sharedPreferences.getString(Constants.SP_TOKEN_KEY,"");
     }
 
     public User retrieveUser(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         final String userJson = sharedPreferences.getString(Constants.SP_USER_KEY, null);
         try {
             return new Gson().fromJson(userJson, User.class);
@@ -156,7 +156,7 @@ public class LoginManager {
     }
 
     public Elder retrieveElder(Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         final String elderJson = sharedPreferences.getString(Constants.SP_ELDER_KEY, null);
         try {
             return new Gson().fromJson(elderJson, Elder.class);
@@ -192,7 +192,7 @@ public class LoginManager {
      * @param context
      */
     private void removeFromSharedPreferences(String key, Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         sharedPreferences
                 .edit()
                 .remove(key)
@@ -206,7 +206,7 @@ public class LoginManager {
      * @param context
      */
     private void saveSharedPreferencesString(String key, String value, Context context) {
-        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.SHARED_PREFS_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = context.getSharedPreferences(Constants.APP_TAG, Context.MODE_PRIVATE);
         sharedPreferences
                 .edit()
                 .putString(key, value)
