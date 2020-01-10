@@ -203,19 +203,9 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
                 Entry entry = chartElectricalCurrent.getEntryByTouchPoint(me.getX(), me.getY());
                 if (currentTouchToast != null) currentTouchToast.cancel();
 
-//                currentTouchToast = Toast.makeText(rootView.getContext(),
-//                        "Electrical current value: " + entry.getY() + "W", Toast.LENGTH_SHORT);
-//                currentTouchToast.show();
-
-//                final long fullTimestamp = ((long) entry.getX()) +
-//                        StateManager.getInstance().getCurrentReferenceTimestamp();
-//                final String strDate = DateUtil.getStringFromDate(
-//                        new Date(fullTimestamp), Constants.FULL_TIME_FORMAT);
-//
-//                currentTouchToast = Toast.makeText(rootView.getContext(),
-//                        "Electrical current value: " + entry.getY() + "W\nTime: " + strDate,
-//                        Toast.LENGTH_SHORT);
-//                currentTouchToast.show();
+                currentTouchToast = Toast.makeText(rootView.getContext(),
+                        "Electrical current value: " + ((int) entry.getY()) + "W", Toast.LENGTH_SHORT);
+                currentTouchToast.show();
             }
 
             @Override public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {}
@@ -239,6 +229,7 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
         xAxis.setValueFormatter(new DateTimeAxisFormatter(this.time, timesDiff));
         xAxis.setDrawGridLines(false);
         xAxis.setTextColor(Color.BLACK);
+        xAxis.setGridColor(Color.BLACK);
     }
 
     private void addLineChartEntries(List<SMARTAAL.CurrentSensorValues.Data> values) {
