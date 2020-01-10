@@ -728,4 +728,103 @@ public class SMARTAAL {
             return new AsyncTaskResult<>(new NullPointerException("No data returned from request"));
         }
     }
+
+    public static class UnreadNotifications extends AsyncTaskRequest<List<UnreadNotifications.Data>> {
+        public static class Data {
+            private int id;
+            private String title;
+            private String message;
+            private String feedback;
+            private Date date;
+
+            public Data(int id, String title, String message, String feedback, Date date) {
+                this.id = id;
+                this.title = title;
+                this.message = message;
+                this.feedback = feedback;
+                this.date = date;
+            }
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public void setTitle(String title) {
+                this.title = title;
+            }
+
+            public String getMessage() {
+                return message;
+            }
+
+            public void setMessage(String message) {
+                this.message = message;
+            }
+
+            public String getFeedback() {
+                return feedback;
+            }
+
+            public void setFeedback(String feedback) {
+                this.feedback = feedback;
+            }
+
+            public Date getDate() {
+                return date;
+            }
+
+            public void setDate(Date date) {
+                this.date = date;
+            }
+
+            @SuppressLint("SimpleDateFormat")
+            public static Data fromJSON(JSONObject jsonObject) throws JSONException, ParseException {
+                final Date date = DateUtil.getDateFromString(jsonObject.getString("date"));
+                return new Data(
+                        jsonObject.getInt("id"),
+                        jsonObject.getString("title"),
+                        jsonObject.getString("message"),
+                        jsonObject.getString("feedback"),
+                        date);
+            }
+        }
+
+        @SuppressLint("DefaultLocale")
+        public UnreadNotifications(int elderId, String token,
+                           OnResultListener<List<Data>> resultListener,
+                           OnFailureListener failureListener) {
+            super(token, String.format(Constants.UNREAD_NOTIFICATIONS_URL, elderId),
+                    resultListener, failureListener);
+        }
+
+        @Override
+        public AsyncTaskResult<List<Data>> request() {
+            try {
+                final JSONObject response = performHttpGetRequest(token, url);
+
+                if (response != null) {
+                    JSONArray data = response.getJSONArray("data");
+                    List<UnreadNotifications.Data> notificationList = new ArrayList<>();
+                    for (int i = 0; i < data.length(); i++) {
+                        JSONObject obj = data.getJSONObject(i);
+                        Data sensorData = Data.fromJSON(obj);
+                        notificationList.add(sensorData);
+                    }
+                    return new AsyncTaskResult<>(notificationList);
+                }
+            } catch (JSONException | ParseException e) {
+                return new AsyncTaskResult<>(e);
+            }
+
+            return new AsyncTaskResult<>(new LinkedList<>());
+        }
+    }
 }

@@ -35,6 +35,7 @@ public class Constants {
     public static final String TEMPERATURE_VALUE_URL = BASE_API_URL + "temperature/%d/last";
     public static final String SOS_VALUE_URL = BASE_API_URL + "sos/%d/all";
     public static final String GAS_EMISSION_VALUE_URL = BASE_API_URL + "gas/%d/last";
+    public static final String UNREAD_NOTIFICATIONS_URL = BASE_API_URL + "notifications/%d/unread";
 
     // last values format order: elderid, number of values
     public static final String DOOR_LAST_VALUES_URL = BASE_API_URL + "door/%d/lastValues/%d";
@@ -74,6 +75,8 @@ public class Constants {
         public static final String CHANNEL_CURRENT_HOUR_VALUE = "hour.graph.update";
         public static final String CHANNEL_CURRENT_DAY_VALUE = "day.graph.update";
         public static final String CHANNEL_CURRENT_MONT_VALUE = "month.graph.update";
+        public static final String CHANNEL_DOOR_ANOMALY_VALUE = "door.anomaly";
+        public static final String CHANNEL_SLEEP_ANOMALY_VALUE = "sleep.anomaly";
 
         public static final String EVENT_NEW_CURRENT_VALUE = "App\\Events\\NewCurrentValueEvent";
         public static final String EVENT_NEW_INTERNAL_TEMP_VALUE = "App\\Events\\NewInternalTemperatureValueEvent";
@@ -85,12 +88,19 @@ public class Constants {
         public static final String EVENT_NEW_CURRENT_HOUR_VALUES = "App\\Events\\HourGraphEvent";
         public static final String EVENT_NEW_CURRENT_DAY_VALUES = "App\\Events\\DayGraphEvent";
         public static final String EVENT_NEW_CURRENT_MONTH_VALUES = "App\\Events\\MonthGraphEvent";
+        public static final String EVENT_NEW_DOOR_ANOMALY = "App\\Events\\DoorAnomalyEvent";
+        public static final String EVENT_SLEEP_DOOR_ANOMALY = "App\\Events\\SleepAnomalyEvent";
     }
 
     public static final String STORAGE_DASHBOARD_FILENAME = APP_TAG + "_" + "Dashboard";
     public static final String STORAGE_ELDER_PROFILE_PICTURE_FILENAME = APP_TAG + "_" + "elderProfilePicture";
 
     public static final int RNG_BOUND = 1000000;
+
+    public static final String GENERAL_NOTIFICATIONS_CHANNEL_ID = "com.example.tsngapp.general_notifications";
+    public static final String GENERAL_NOTIFICATIONS_CHANNEL_NAME = "General";
+    public static final String URGENT_NOTIFICATIONS_CHANNEL_ID = "com.example.tsngapp.urgent_notifications";
+    public static final String URGENT_NOTIFICATIONS_CHANNEL_NAME = "Urgent";
 }
 
 

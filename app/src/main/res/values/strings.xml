@@ -85,6 +85,9 @@
     <string name="label_password">Password</string>
     <string name="label_no_account_text">Don\'t have an account?</string>
     <string name="label_sign_up">Sign up</string>
+    <string name="label_door_anomaly">Door anomaly</string>
+    <string name="door_anomaly_should_be_outside">The elder should be outside but is inside.</string>
+    <string name="door_anomaly_should_be_inside">The elder should be inside but is outside.</string>
     <string-array name="array_divisions">
         <item>All</item>
         <item>Bedroom</item>

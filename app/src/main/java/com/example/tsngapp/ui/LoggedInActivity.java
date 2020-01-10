@@ -4,17 +4,23 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
+import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.helpers.Constants;
 import com.example.tsngapp.helpers.DialogUtil;
@@ -26,9 +32,16 @@ import com.example.tsngapp.ui.fragment.StateFragment;
 import com.example.tsngapp.ui.fragment.listener.BaseFragmentActionListener;
 import com.example.tsngapp.view_managers.LoginManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.pusher.pushnotifications.PushNotifications;
+import com.pusher.client.Pusher;
+import com.pusher.client.PusherOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class LoggedInActivity extends AppCompatActivity implements
         ProfileFragment.ProfileFragmentActionListener,
@@ -43,13 +56,18 @@ public class LoggedInActivity extends AppCompatActivity implements
     private ActionBar actionBar;
     private FragmentManager fragmentManager;
 
+    private NotificationManager notificationManager;
+    private Pusher pusher;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme);
         super.onCreate(savedInstanceState);
 
-        PushNotifications.start(getApplicationContext(), BuildConfig.PUSHER_BEAMS_INSTANCE_ID);
-        PushNotifications.addDeviceInterest(Constants.APP_TAG);
+        setupNotificationChannels();
+
+//        PushNotifications.start(getApplicationContext(), BuildConfig.PUSHER_BEAMS_INSTANCE_ID);
+//        PushNotifications.addDeviceInterest(Constants.APP_TAG);
 
         // Try to restore data saved on Shared Preferences
         if (!StateManager.getInstance().isAuthenticationInfoLoaded()) {
@@ -62,6 +80,8 @@ public class LoggedInActivity extends AppCompatActivity implements
 
         fragmentManager = getSupportFragmentManager();
         loadFragment(R.string.label_home, new DashboardFragment(), false);
+
+        bindSockets();
     }
 
     @Override
@@ -127,6 +147,123 @@ public class LoggedInActivity extends AppCompatActivity implements
         }
         return false;
     };
+
+    private void setupNotificationChannels() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            final List<NotificationChannel> channels = new ArrayList<>();
+            NotificationChannel generalChannel = new NotificationChannel(
+                    Constants.GENERAL_NOTIFICATIONS_CHANNEL_ID,
+                    Constants.GENERAL_NOTIFICATIONS_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_DEFAULT);
+            generalChannel.setDescription("General notifications");
+            channels.add(generalChannel);
+
+            NotificationChannel urgentChannel = new NotificationChannel(
+                    Constants.URGENT_NOTIFICATIONS_CHANNEL_ID,
+                    Constants.URGENT_NOTIFICATIONS_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH);
+            urgentChannel.setDescription("Urgent notification like the trigger of an SOS button");
+            channels.add(urgentChannel);
+
+            notificationManager = (NotificationManager)
+                    this.getSystemService(NOTIFICATION_SERVICE);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannels(channels);
+            }
+        }
+    }
+
+    private void bindSockets() {
+        PusherOptions options = new PusherOptions();
+        options.setCluster("eu");
+        pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
+
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_DOOR_ANOMALY, event -> {
+                try {
+                    final int currentElderId = StateManager.getInstance().getElder().getId();
+
+                    final String data = event.getData();
+                    final JSONArray arr = new JSONObject(data).getJSONArray("values");
+                    final JSONArray innerArr = arr.getJSONArray(0);
+                    final int elderId = innerArr.getInt(0);
+                    if (elderId == currentElderId) {
+                        final String value = innerArr.getString(1);
+                        if (value.equals("E")) {
+                            showNotification(StateManager.getInstance().getRng().nextInt(),
+                                    getString(R.string.label_door_anomaly),
+                                    getString(R.string.door_anomaly_should_be_outside));
+                        } else {
+                            showNotification(StateManager.getInstance().getRng().nextInt(),
+                                    getString(R.string.label_door_anomaly),
+                                    getString(R.string.door_anomaly_should_be_inside));
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.d(Constants.DEBUG_TAG, String.format(
+                            "Failed to parse %s EVENT from Pusher %s CHANNEL",
+                            Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE,
+                            Constants.Pusher.EVENT_NEW_DOOR_ANOMALY));
+                }
+            });
+
+        pusher
+            .subscribe(Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE)
+            .bind(Constants.Pusher.EVENT_NEW_DOOR_ANOMALY, event -> {
+                try {
+                    final int currentElderId = StateManager.getInstance().getElder().getId();
+
+                    final String data = event.getData();
+                    final JSONArray arr = new JSONObject(data).getJSONArray("values");
+                    final JSONArray innerArr = arr.getJSONArray(0);
+                    final int elderId = innerArr.getInt(0);
+                    if (elderId == currentElderId) {
+                        final String value = innerArr.getString(1);
+                        if (value.equals("E")) {
+                            showNotification(StateManager.getInstance().getRng().nextInt(),
+                                    getString(R.string.label_door_anomaly),
+                                    getString(R.string.door_anomaly_should_be_outside));
+                        } else {
+                            showNotification(StateManager.getInstance().getRng().nextInt(),
+                                    getString(R.string.label_door_anomaly),
+                                    getString(R.string.door_anomaly_should_be_inside));
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.d(Constants.DEBUG_TAG, String.format(
+                            "Failed to parse %s EVENT from Pusher %s CHANNEL",
+                            Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE,
+                            Constants.Pusher.EVENT_NEW_DOOR_ANOMALY));
+                }
+            });
+
+        pusher.connect();
+    }
+
+    private void showNotification(int id, String title, String message) {
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            notification = new NotificationCompat.Builder(
+                            this, Constants.URGENT_NOTIFICATIONS_CHANNEL_ID)
+                            .setSmallIcon(R.drawable.ic_warning_black_24dp)
+                            .setContentTitle(title)
+                            .setContentText(message)
+                            .build();
+        } else {
+            notification = new NotificationCompat.Builder(this)
+                            .setSmallIcon(R.drawable.ic_warning_black_24dp)
+                            .setContentTitle(title)
+                            .setContentText(message)
+                            .build();
+        }
+
+        if (notificationManager != null && notification != null) {
+            notificationManager.notify(id, notification);
+        } else {
+            Log.d(Constants.DEBUG_TAG, "Couldn't create notification");
+        }
+    }
 
     private void changeTitleAndNavigationFromTag(String className) {
         if (className != null && className.equals(ProfileFragment.class.getName())) {
