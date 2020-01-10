@@ -129,6 +129,14 @@ public class LoggedInActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (pusher != null) {
+            pusher.unsubscribe(Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE);
+        }
+    }
+
     private BottomNavigationView.OnNavigationItemSelectedListener navItemClickListener = item -> {
         switch (item.getItemId()) {
             case R.id.navigation_home:
@@ -177,36 +185,6 @@ public class LoggedInActivity extends AppCompatActivity implements
         PusherOptions options = new PusherOptions();
         options.setCluster("eu");
         pusher = new Pusher(BuildConfig.PUSHER_KEY, options);
-
-        pusher
-            .subscribe(Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE)
-            .bind(Constants.Pusher.EVENT_NEW_DOOR_ANOMALY, event -> {
-                try {
-                    final int currentElderId = StateManager.getInstance().getElder().getId();
-
-                    final String data = event.getData();
-                    final JSONArray arr = new JSONObject(data).getJSONArray("values");
-                    final JSONArray innerArr = arr.getJSONArray(0);
-                    final int elderId = innerArr.getInt(0);
-                    if (elderId == currentElderId) {
-                        final String value = innerArr.getString(1);
-                        if (value.equals("E")) {
-                            showNotification(StateManager.getInstance().getRng().nextInt(),
-                                    getString(R.string.label_door_anomaly),
-                                    getString(R.string.door_anomaly_should_be_outside));
-                        } else {
-                            showNotification(StateManager.getInstance().getRng().nextInt(),
-                                    getString(R.string.label_door_anomaly),
-                                    getString(R.string.door_anomaly_should_be_inside));
-                        }
-                    }
-                } catch (JSONException e) {
-                    Log.d(Constants.DEBUG_TAG, String.format(
-                            "Failed to parse %s EVENT from Pusher %s CHANNEL",
-                            Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE,
-                            Constants.Pusher.EVENT_NEW_DOOR_ANOMALY));
-                }
-            });
 
         pusher
             .subscribe(Constants.Pusher.CHANNEL_DOOR_ANOMALY_VALUE)

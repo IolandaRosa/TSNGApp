@@ -1,9 +1,11 @@
 package com.example.tsngapp.ui.fragment;
 
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,6 +22,7 @@ import com.example.tsngapp.BuildConfig;
 import com.example.tsngapp.R;
 import com.example.tsngapp.api.SMARTAAL;
 import com.example.tsngapp.helpers.Constants;
+import com.example.tsngapp.helpers.DateUtil;
 import com.example.tsngapp.helpers.StateManager;
 import com.example.tsngapp.model.User;
 import com.example.tsngapp.ui.chart.DateTimeAxisFormatter;
@@ -30,6 +33,8 @@ import com.github.mikephil.charting.data.BaseEntry;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.pusher.client.Pusher;
 import com.pusher.client.PusherOptions;
 
@@ -60,6 +65,7 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
     private HashMap<Float, Long> timesDiff;
 
     private Pusher pusher;
+    private Toast currentTouchToast;
 
     public ElectricalCurrentStateFragment() {
         timesDiff = new HashMap<>();
@@ -189,6 +195,37 @@ public class ElectricalCurrentStateFragment extends BaseStateMenuItemFragment {
         chartElectricalCurrent.getLegend().setEnabled(false);
         chartElectricalCurrent.getAxisRight().setEnabled(false);
         chartElectricalCurrent.getDescription().setEnabled(false);
+
+        chartElectricalCurrent.setOnChartGestureListener(new OnChartGestureListener() {
+            @Override
+            @SuppressLint("SimpleDateFormat")
+            public void onChartSingleTapped(MotionEvent me) {
+                Entry entry = chartElectricalCurrent.getEntryByTouchPoint(me.getX(), me.getY());
+                if (currentTouchToast != null) currentTouchToast.cancel();
+
+//                currentTouchToast = Toast.makeText(rootView.getContext(),
+//                        "Electrical current value: " + entry.getY() + "W", Toast.LENGTH_SHORT);
+//                currentTouchToast.show();
+
+//                final long fullTimestamp = ((long) entry.getX()) +
+//                        StateManager.getInstance().getCurrentReferenceTimestamp();
+//                final String strDate = DateUtil.getStringFromDate(
+//                        new Date(fullTimestamp), Constants.FULL_TIME_FORMAT);
+//
+//                currentTouchToast = Toast.makeText(rootView.getContext(),
+//                        "Electrical current value: " + entry.getY() + "W\nTime: " + strDate,
+//                        Toast.LENGTH_SHORT);
+//                currentTouchToast.show();
+            }
+
+            @Override public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {}
+            @Override public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {}
+            @Override public void onChartLongPressed(MotionEvent me) {}
+            @Override public void onChartDoubleTapped(MotionEvent me) {}
+            @Override public void onChartFling(MotionEvent me1, MotionEvent me2, float velocityX, float velocityY) {}
+            @Override public void onChartScale(MotionEvent me, float scaleX, float scaleY) {}
+            @Override public void onChartTranslate(MotionEvent me, float dX, float dY) {}
+        });
 
         YAxis yAxis = chartElectricalCurrent.getAxisLeft();
         yAxis.setAxisMinimum(0);
